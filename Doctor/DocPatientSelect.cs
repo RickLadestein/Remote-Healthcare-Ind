@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace Doctor
 {
-    public partial class AstrandDoctorGUI : Form
+    public partial class DocPatientSelect : Form
     {
-        public AstrandDoctorGUI()
+        public DocPatientSelect()
         {
             InitializeComponent();
         }
