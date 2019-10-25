@@ -48,7 +48,7 @@ namespace RHServer.Networking
             return JsonConvert.SerializeObject(new
             {
                 command = "SYSTEM_LOGIN",
-                result = "TRUE"
+                result = result
             });
         }
 

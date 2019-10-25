@@ -52,6 +52,18 @@ namespace RHServer.IO
             return false;
         }
 
+        public Boolean CreateFile(String file_name)
+        {
+            String path = Directory.GetCurrentDirectory();
+            if (!File.Exists(Path.Combine(path, file_name)))
+            {
+                File.Create(Path.Combine(path, file_name));
+                return true;
+            }
+            else
+                return false;
+        }
+
         public Boolean WriteFileContents(String file_name, String data)
         {
             String path = Directory.GetCurrentDirectory();
@@ -79,6 +91,19 @@ namespace RHServer.IO
             {
                 return false;
             }
+        }
+
+        public List<String> GetFileNames()
+        {
+            List<String> output = new List<string>() ;
+            String path = Directory.GetCurrentDirectory();
+
+            string[] data = Directory.GetFiles(path);
+            foreach(string s in data)
+            {
+                output.Add(s);
+            }
+            return output;  
         }
     }
 }
