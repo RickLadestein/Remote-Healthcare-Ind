@@ -38,6 +38,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -49,6 +50,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bike\BikeHandler.cs" />
+    <Compile Include="Bike\BikeMeasurement.cs" />
+    <Compile Include="Bike\IBikeMeasurementListener.cs" />
     <Compile Include="Commands\Receive\BikeMeasurement.cs" />
     <Compile Include="Commands\Receive\BikeState.cs" />
     <Compile Include="Communication\Bluetooth\BluetoothConnection.cs" />
