@@ -28,6 +28,8 @@ namespace RHServer
             String tosend = "Helloworld";
             String end = "{ COMMAND: END }";
 
+
+            int count = 0;
             bool looping = true;
             while(looping)
             {
@@ -35,7 +37,15 @@ namespace RHServer
                 byte[] data2 = Encoding.UTF8.GetBytes(end);
                 sender.SendData(data, (ushort) data.Length);
                 Thread.Sleep(1000);
+                count++;
+                if (count == 10)
+                    looping = false;
                 //looping = false;
+            }
+
+            while(true)
+            {
+                Thread.Sleep(1000);
             }
         }
     }

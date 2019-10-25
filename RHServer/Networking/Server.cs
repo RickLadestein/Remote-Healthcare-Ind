@@ -21,11 +21,12 @@ namespace RHServer.Networking
         private Thread thread;
 
         public int port;
-        public List<Connection> connections;
+        public List<Connection> connections, deletions;
         public Server(int port)
         {
             this.port = port;
             connections = new List<Connection>();
+            deletions = new List<Connection>();
             tickrate = new System.Timers.Timer(1000 / 128);
             tickrate.AutoReset = true;
             tickrate.Elapsed += onTimerEvent;
@@ -72,6 +73,10 @@ namespace RHServer.Networking
 
             foreach (Connection c in connections)
                 c.update();
+
+            foreach (Connection c in deletions)
+                connections.Remove(c);
+            deletions.Clear();
         }
 
         public void onConnect(TcpClient c)
@@ -92,7 +97,7 @@ namespace RHServer.Networking
             Console.WriteLine($"[Server]: Dropping Connection with {c.ip_endpoint}" +
                 $"\n reason: {e.Message}");
             c.EndConnection();
-            connections.Remove(c);
+            deletions.Add(c);
             Console.WriteLine($"[Server]: Connection with {c.ip_endpoint}" +
                 $" terminated");
         }
