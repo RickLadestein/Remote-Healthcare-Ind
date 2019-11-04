@@ -16,5 +16,10 @@ namespace Doctor
         {
             InitializeComponent();
         }
+        public DocPatientSelect(string docname)
+        {
+            InitializeComponent();
+        }
+
     }
 }
