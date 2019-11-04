@@ -7,14 +7,16 @@ namespace RHServer.Profiles
     class Doctor
     {
         public string username;
-        public string password;
-        public Guid uid;
+        public string hash;
+        public Boolean active;
+        public Guid id;
 
-        public Doctor(string username, string password, Guid uid)
+        public Doctor(string username, string hash)
         {
             this.username = username;
-            this.password = password;
-            this.uid = uid;
+            this.hash = hash;
+            this.active = false;
+            this.id = Guid.NewGuid();
         }
     }
 }

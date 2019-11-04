@@ -10,6 +10,8 @@ namespace RHServer.Networking
 {
     class DataRouter
     {
+
+#region Initialization
         private static DataRouter instance;
         public static DataRouter getInstance()
         {
@@ -25,61 +27,143 @@ namespace RHServer.Networking
         {
             doctors = new List<Doctor>();
             patients = new List<Patient>();
+
+            ImportData();
         }
 
-        private void importData()
+        public enum USERTYPES
         {
-            string input = FileManager.GetInstance().GetFileContents("users.cfg");
-            dynamic data = JsonConvert.DeserializeObject(input);
+            DOCTOR = 0x00,
+            PATIENT = 0x01
+        }
 
-            doctors = (List<Doctor>)data.doctors;
-            patients = (List<Patient>)data.patients;
+        public enum FILELOCATIONS
+        {
+            DATA = 0x00,
+            USERS = 0x01,
+            IMAGES = 0x02
+        }
+
+        private void ImportData()
+        {
+            string input = FileManager.GetFileContents("resources\\users\\doctors.json");
+            dynamic data = JsonConvert.DeserializeObject(input);
+            doctors = ((JArray) data.users).ToObject<List<Doctor>>();
+
+            input = FileManager.GetFileContents("resources\\users\\patients.json");
+            data = JsonConvert.DeserializeObject(input);
+            patients = ((JArray)data.users).ToObject<List<Patient>>();
             return;
         }
-
-        private Boolean login(string username, string password)
-        {
-            foreach(Doctor d in doctors)
-                if(d.username == username && d.password == password)
-                    return true;
-
-            return false;
-        } 
-
-        public void parseCommand(Connection c, string msg)
+#endregion
+        public void ParseCommand(Connection c, string msg)
         {
             dynamic data = JsonConvert.DeserializeObject(msg);
-
+            dynamic inner_data = data.data;
             string output;
             byte[] toSend;
-            switch(data.command)
+            switch((String)data.command)
             {
                 case "ACK":
                     break;
-                case "GET_FILENAMES":
-                    toSend = Encoding.UTF8.GetBytes(DataPackages.GetInstance().FileNameResponse(FileManager.GetInstance().GetFileNames()));
-                    c.SendData(toSend, (ushort)toSend.Length);
+                case "ERROR":
                     break;
-                case "GET_FILE":
-                    output = FileManager.GetInstance().GetFileContents(data.filename);
-                    toSend = Encoding.UTF8.GetBytes(DataPackages.GetInstance().FileContentResponse(data.filename, output));
-                    c.SendData(toSend, (ushort)toSend.Length);
+                case "file/getnames":
                     break;
-                case "SYSTEM_LOGIN":
-                    if (login(data.username, data.password))
-                    {
-                        toSend = Encoding.UTF8.GetBytes(DataPackages.GetInstance().AckMessage());
-                        c.SendData(toSend, (ushort)toSend.Length);
-                    } 
-                    else
-                    {
-                        toSend = Encoding.UTF8.GetBytes(DataPackages.GetInstance().ErrorMessage(data.command, "Invalid credentials"));
-                        c.SendData(toSend, (ushort)toSend.Length);
-                    }
+                case "file/create":
                     break;
-                       
+                case "file/delete":
+                    break;
+                case "file/get":
+                    break;
+                case "user/login":
+                    Login(c, inner_data);
+                    break;
+                case "user/logout":
+                    Logout(c, inner_data);
+                    break;
+                case "user/data":
+                    break;
+                case "user/msg":
+                    break;
+                case "patients/get_online":
+                    break;
+                case "doctors/get_online":
+                    break;
+                case "ALIVE":
+                    SendDataToConnection(c, DataPackages.Message_Alive());
+                    break;
 
+                default:
+                    break;
             }
+        }
+
+        private void Login(Connection c, dynamic data)
+        {
+            if (data.type == USERTYPES.PATIENT)
+            {
+                //do something if patient wants to login
+            } else
+            {
+                foreach (Doctor d in doctors)
+                {
+                    if (d.hash == (String)data.hash)
+                    {
+                        if (d.active)
+                        {
+                            SendDataToConnection(c, DataPackages.Response_Error("user/login", "User already logged in"));
+                        }
+                        else
+                        {
+                            d.active = true;
+                            SendDataToConnection(c, DataPackages.Response_Ack("user/login", "", d.id));
+                        }
+                        break;
+                    }
+                }
+                    SendDataToConnection(c, DataPackages.Response_Error("user/login", "no user found with username or password combination"));
+            }
+        }
+
+        private void Logout(Connection c, dynamic data)
+        {
+            if (data.type == USERTYPES.PATIENT)
+            {
+                //do something if patient
+            } else
+            {
+                foreach (Doctor d in doctors) 
+                {
+                    if (d.id.Equals((Guid)data.id))
+                    {
+                        if(d.active)
+                        {
+                            d.active = false;
+                            SendDataToConnection(c, DataPackages.Response_Ack("user/logout", "", null));
+                        } else
+                        {
+                            SendDataToConnection(c, DataPackages.Response_Error("user/logout", "user not logged in"));
+                        }
+                        return;
+                    }
+                }
+                SendDataToConnection(c, DataPackages.Response_Error("user/logout", "uid not found for user"));
+            }
+        }
+
+        private void GetFileNames(Connection c, dynamic data)
+        {
+            String path = data.location;
+            FileManager.GetFileNames("");
+        }
+
+        private void SendDataToConnection(Connection c, String msg)
+        {
+            byte[] output = Encoding.UTF8.GetBytes(msg);
+            ushort length = (ushort)msg.Length;
+            c.SendData(output, length);
+            Console.WriteLine("[Server -> Client] " + msg);
         }
     }
 }

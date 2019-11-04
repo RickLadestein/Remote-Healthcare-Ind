@@ -14,9 +14,6 @@ namespace RHServer.Networking
         private TcpListener listener;
         private System.Timers.Timer tickrate;
 
-        private ServerCommandHandler command_handler;
-        private ICommandListener handle;
-
         private ConnectionWorker worker;
         private Thread thread;
 
@@ -30,9 +27,6 @@ namespace RHServer.Networking
             tickrate = new System.Timers.Timer(1000 / 128);
             tickrate.AutoReset = true;
             tickrate.Elapsed += onTimerEvent;
-
-            command_handler = ServerCommandHandler.GetInstance();
-            handle = command_handler;
         }
 
         public void Stop()
@@ -89,7 +83,7 @@ namespace RHServer.Networking
         {
             String output = Encoding.UTF8.GetString(data);
             Console.WriteLine($"[Client -> Server]: {output}");
-            handle.OnCommandReceived(c, output);
+            DataRouter.getInstance().ParseCommand(c, output);
         }
 
         public void onConnectionError(Connection c, Exception e)

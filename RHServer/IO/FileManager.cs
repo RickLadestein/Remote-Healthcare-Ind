@@ -9,22 +9,13 @@ namespace RHServer.IO
 {
     class FileManager
     {
-        public static FileManager instance;
-        public static FileManager GetInstance()
-        {
-            if (instance == null)
-                instance = new FileManager();
-            return instance;
-        }
-
-        private FileManager() { }
-
-        public String GetFileContents(String file)
+        public static String GetFileContents(String file)
         {
             try
             {
                 String path = Directory.GetCurrentDirectory();
-                FileStream file_s = File.Open(Path.Combine(path, file), FileMode.Open);
+                path = Path.Combine(path, file);
+                FileStream file_s = File.Open(path, FileMode.Open);
                 StreamReader reader = new StreamReader(file_s);
                 string file_contents = reader.ReadToEnd();
 
@@ -41,7 +32,7 @@ namespace RHServer.IO
             }
         }
 
-        public Boolean DeleteFile(String file_name)
+        public static Boolean DeleteFile(String file_name)
         {
             String path = Directory.GetCurrentDirectory();
             if (File.Exists(Path.Combine(path, file_name)))
@@ -52,7 +43,7 @@ namespace RHServer.IO
             return false;
         }
 
-        public Boolean CreateFile(String file_name)
+        public static Boolean CreateFile(String file_name)
         {
             String path = Directory.GetCurrentDirectory();
             if (!File.Exists(Path.Combine(path, file_name)))
@@ -64,7 +55,7 @@ namespace RHServer.IO
                 return false;
         }
 
-        public Boolean WriteFileContents(String file_name, String data)
+        public static Boolean WriteFileContents(String file_name, String data)
         {
             String path = Directory.GetCurrentDirectory();
             if (!File.Exists(Path.Combine(path, file_name)))
@@ -93,15 +84,17 @@ namespace RHServer.IO
             }
         }
 
-        public List<String> GetFileNames()
+        public static List<String> GetFileNames(string folder)
         {
             List<String> output = new List<string>() ;
             String path = Directory.GetCurrentDirectory();
+            path = Path.Combine(path, folder);
 
             string[] data = Directory.GetFiles(path);
             foreach(string s in data)
             {
-                output.Add(s);
+                String[] files = s.Split("\\");
+                output.Add(files[files.Length - 1]);
             }
             return output;  
         }

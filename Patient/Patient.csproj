@@ -55,8 +55,6 @@
     <Compile Include="Bike\IBikeMeasurementListener.cs" />
     <Compile Include="Commands\Receive\BikeMeasurement.cs" />
     <Compile Include="Commands\Receive\BikeState.cs" />
-    <Compile Include="Communication\Bluetooth\BluetoothConnection.cs" />
-    <Compile Include="Communication\Bluetooth\BluetoothHandler.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

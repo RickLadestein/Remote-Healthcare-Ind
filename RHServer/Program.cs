@@ -2,7 +2,9 @@
 using System.Net.Sockets;
 using System.Threading;
 using System.Text;
+using System.Collections.Generic;
 using RHServer.Networking;
+using RHServer.IO;
 
 namespace RHServer
 {
@@ -24,6 +26,9 @@ namespace RHServer
 
         public void Run()
         {
+
+            DataRouter.getInstance();
+            List<String> names = FileManager.GetFileNames("resources\\data");
             Connection sender = new Connection(new TcpClient("localhost", 25565), null);
             String tosend = "Helloworld";
             String end = "{ COMMAND: END }";
@@ -33,13 +38,15 @@ namespace RHServer
             bool looping = true;
             while(looping)
             {
-                byte[] data = Encoding.UTF8.GetBytes(DataPackages.GetInstance().AliveMessage());
+                byte[] data = Encoding.UTF8.GetBytes(DataPackages.Message_Alive());
                 byte[] data2 = Encoding.UTF8.GetBytes(end);
                 sender.SendData(data, (ushort) data.Length);
                 Thread.Sleep(1000);
                 count++;
                 if (count == 10)
+                {
                     looping = false;
+                }
                 //looping = false;
             }
 
