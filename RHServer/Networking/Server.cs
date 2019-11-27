@@ -179,6 +179,7 @@ namespace RHServer.Networking
             ConnectionWorker worker = (ConnectionWorker) result.AsyncState;
             TcpClient client = worker.server.EndAcceptTcpClient(result);
             worker.handle.onConnect(client);
+            accepting = false;
         }
     }
 

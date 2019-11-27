@@ -56,7 +56,6 @@ namespace Patient.Communication
         public void update()
         {
             this.message_delta_time++;
-            Console.WriteLine(this.message_delta_time);
             if(this.connected && this.message_delta_time >= 1280)
             {
                 this.connected = false;
