@@ -46,11 +46,11 @@ namespace RHServer.Networking
 
         private void ImportData()
         {
-            string input = FileManager.GetFileContents("resources\\users\\doctors.json");
+            string input = FileManager.GetFileContents("doctors.json", "resources\\users");
             dynamic data = JsonConvert.DeserializeObject(input);
             doctors = ((JArray) data.users).ToObject<List<Doctor>>();
 
-            input = FileManager.GetFileContents("resources\\users\\patients.json");
+            input = FileManager.GetFileContents("patients.json", "resources\\users");
             data = JsonConvert.DeserializeObject(input);
             patients = ((JArray)data.users).ToObject<List<Patient>>();
             return;
@@ -58,44 +58,53 @@ namespace RHServer.Networking
 #endregion
         public void ParseCommand(Connection c, string msg)
         {
-            dynamic data = JsonConvert.DeserializeObject(msg);
-            dynamic inner_data = data.data;
-            string output;
-            byte[] toSend;
-            switch((String)data.command)
+            Logger.LogReceiveMessage(msg);
+            try
             {
-                case "ACK":
-                    break;
-                case "ERROR":
-                    break;
-                case "file/getnames":
-                    break;
-                case "file/create":
-                    break;
-                case "file/delete":
-                    break;
-                case "file/get":
-                    break;
-                case "user/login":
-                    Login(c, inner_data);
-                    break;
-                case "user/logout":
-                    Logout(c, inner_data);
-                    break;
-                case "user/data":
-                    break;
-                case "user/msg":
-                    break;
-                case "patients/get_online":
-                    break;
-                case "doctors/get_online":
-                    break;
-                case "ALIVE":
-                    SendDataToConnection(c, DataPackages.Message_Alive());
-                    break;
+                dynamic data = JsonConvert.DeserializeObject(msg);
+                dynamic inner_data = data.data;
+                string output;
+                byte[] toSend;
+                switch ((String)data.command)
+                {
+                    case "ACK":
+                        break;
+                    case "ERROR":
+                        break;
+                    case "file/getnames":
+                        GetFileNames(c, inner_data);
+                        break;
+                    case "file/create":
+                        break;
+                    case "file/delete":
+                        break;
+                    case "file/get":
+                        GetFile(c, inner_data);
+                        break;
+                    case "user/login":
+                        Login(c, inner_data);
+                        break;
+                    case "user/logout":
+                        Logout(c, inner_data);
+                        break;
+                    case "user/data":
+                        break;
+                    case "user/msg":
+                        break;
+                    case "patients/get_online":
+                        break;
+                    case "doctors/get_online":
+                        break;
+                    case "ALIVE":
+                        SendDataToConnection(c, DataPackages.Message_Alive());
+                        break;
 
-                default:
-                    break;
+                    default:
+                        break;
+                }
+            } catch(Exception ex)
+            {
+
             }
         }
 
@@ -155,7 +164,19 @@ namespace RHServer.Networking
         private void GetFileNames(Connection c, dynamic data)
         {
             String path = data.location;
-            FileManager.GetFileNames("");
+            List<String> files = FileManager.GetFileNames(path);
+            SendDataToConnection(c, DataPackages.Response_Ack("file/getnames", "", files));
+        }
+
+        private void GetFile(Connection c, dynamic data)
+        {
+            String path = data.location;
+            String file = data.file;
+            String contents = FileManager.GetFileContents(file, path);
+            if (contents == "ERROR")
+                SendDataToConnection(c, DataPackages.Response_Error("file/get", "Error 404: File was not found"));
+            else
+                SendDataToConnection(c, DataPackages.Response_Ack("file/get", "", contents));
         }
 
         private void SendDataToConnection(Connection c, String msg)
@@ -163,7 +184,7 @@ namespace RHServer.Networking
             byte[] output = Encoding.UTF8.GetBytes(msg);
             ushort length = (ushort)msg.Length;
             c.SendData(output, length);
-            Console.WriteLine("[Server -> Client] " + msg);
+            Logger.LogSendMessage(msg);
         }
     }
 }

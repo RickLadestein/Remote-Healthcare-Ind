@@ -27,6 +27,7 @@ namespace RHServer.Networking
             tickrate = new System.Timers.Timer(1000 / 128);
             tickrate.AutoReset = true;
             tickrate.Elapsed += onTimerEvent;
+            DataRouter.getInstance();
         }
 
         public void Stop()
@@ -60,16 +61,40 @@ namespace RHServer.Networking
 
         public void onTimerEvent(Object source, ElapsedEventArgs e)
         {
-            foreach(Connection c in connections)
+            for (int i = 0; i < connections.Count; i++)
+                try
+                {
+                    connections[i].ReadData();
+                }
+                catch (Exception ex) { }
+
+            for (int i = 0; i < connections.Count; i++)
+                try
+                {
+                    byte[] data = Encoding.UTF8.GetBytes(DataPackages.Message_Alive());
+                    connections[i].SendData(data, (ushort)data.Length);
+                }
+                catch (Exception ex) { }
+
+            for (int i = 0; i < connections.Count; i++)
+                try
+                {
+                    connections[i].update();
+                }
+                catch (Exception ex) { }
+
+            for (int i = 0; i < deletions.Count; i++)
             {
-                c.ReadData();
+                string endpoint = deletions[i].ip_endpoint;
+                Connection toremove = null;
+                for (int j = 0; j < connections.Count; j++)
+                    if (connections[j].ip_endpoint == endpoint)
+                    {
+                        toremove = connections[j];
+                        j = connections.Count;
+                    }
+                connections.Remove(toremove);
             }
-
-            foreach (Connection c in connections)
-                c.update();
-
-            foreach (Connection c in deletions)
-                connections.Remove(c);
             deletions.Clear();
         }
 
@@ -82,7 +107,6 @@ namespace RHServer.Networking
         public void onDataReceived(Connection c, byte[] data, ushort length)
         {
             String output = Encoding.UTF8.GetString(data);
-            Console.WriteLine($"[Client -> Server]: {output}");
             DataRouter.getInstance().ParseCommand(c, output);
         }
 

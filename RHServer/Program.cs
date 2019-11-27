@@ -20,39 +20,16 @@ namespace RHServer
         public Program()
         {
             server = new Server(25565);
+            Logger.SetLogMode(Logger.LOGMODE.LIMITED);
             server.Start();
             Run();
         }
 
         public void Run()
         {
-
-            DataRouter.getInstance();
-            List<String> names = FileManager.GetFileNames("resources\\data");
-            Connection sender = new Connection(new TcpClient("localhost", 25565), null);
-            String tosend = "Helloworld";
-            String end = "{ COMMAND: END }";
-
-
-            int count = 0;
-            bool looping = true;
-            while(looping)
-            {
-                byte[] data = Encoding.UTF8.GetBytes(DataPackages.Message_Alive());
-                byte[] data2 = Encoding.UTF8.GetBytes(end);
-                sender.SendData(data, (ushort) data.Length);
-                Thread.Sleep(1000);
-                count++;
-                if (count == 10)
-                {
-                    looping = false;
-                }
-                //looping = false;
-            }
-
             while(true)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(1);
             }
         }
     }

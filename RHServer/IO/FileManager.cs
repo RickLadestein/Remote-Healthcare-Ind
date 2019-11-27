@@ -9,11 +9,12 @@ namespace RHServer.IO
 {
     class FileManager
     {
-        public static String GetFileContents(String file)
+        public static String GetFileContents(String file, String location)
         {
             try
             {
                 String path = Directory.GetCurrentDirectory();
+                path = Path.Combine(path, location);
                 path = Path.Combine(path, file);
                 FileStream file_s = File.Open(path, FileMode.Open);
                 StreamReader reader = new StreamReader(file_s);
@@ -28,13 +29,14 @@ namespace RHServer.IO
             } catch(Exception e)
             {
                 Console.WriteLine(e.Message);
-                return "";
+                return "ERROR";
             }
         }
 
-        public static Boolean DeleteFile(String file_name)
+        public static Boolean DeleteFile(String file_name, String location)
         {
             String path = Directory.GetCurrentDirectory();
+            path = Path.Combine(path, location);
             if (File.Exists(Path.Combine(path, file_name)))
             {
                 File.Delete(Path.Combine(path, file_name));
@@ -43,9 +45,10 @@ namespace RHServer.IO
             return false;
         }
 
-        public static Boolean CreateFile(String file_name)
+        public static Boolean CreateFile(String file_name, String location)
         {
             String path = Directory.GetCurrentDirectory();
+            path = Path.Combine(path, location);
             if (!File.Exists(Path.Combine(path, file_name)))
             {
                 File.Create(Path.Combine(path, file_name));
@@ -55,9 +58,10 @@ namespace RHServer.IO
                 return false;
         }
 
-        public static Boolean WriteFileContents(String file_name, String data)
+        public static Boolean WriteFileContents(String file_name, String location, String data)
         {
             String path = Directory.GetCurrentDirectory();
+            path = Path.Combine(path, location);
             if (!File.Exists(Path.Combine(path, file_name)))
             {
                 try
