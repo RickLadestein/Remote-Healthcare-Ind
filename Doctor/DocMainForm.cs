@@ -15,6 +15,17 @@ namespace Doctor
         public AstrandDoctorGUI()
         {
             InitializeComponent();
+            MessageBox.Show("Something went wrong. Please contact your system administrator!\nError code: ERR_NO_DOCNAME");
+        }
+        public AstrandDoctorGUI(string patName)
+        {
+            InitializeComponent();
+            // TODO
+        }
+
+        private void BtnAppExit_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }

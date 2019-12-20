@@ -22,7 +22,7 @@ namespace Doctor
             if (VerifyLogin(txtUsername.Text, txtPassword.Text))
             {
                 MessageBox.Show("Hoi " + txtUsername.Text + "!");
-                Form temp = new DocPatientSelect();
+                Form temp = new DocPatientSelect(txtUsername.Text);
                 temp.Show();
                 this.Hide();
             }
