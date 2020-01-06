@@ -47,19 +47,19 @@ namespace RHServer.Networking
         private void ImportData()
         {
             list_mutex.WaitOne();
-            List<Doctor> doctors = new List<Doctor>();
+            List<doctor> doctors = new List<doctor>();
             string input = FileManager.GetFileContents("doctors.json", "resources\\users");
             dynamic data = JsonConvert.DeserializeObject(input);
-            doctors = ((JArray) data.users).ToObject<List<Doctor>>();
+            doctors = ((JArray) data.users).ToObject<List<doctor>>();
 
-            List<Patient> patients = new List<Patient>();
+            List<patient> patients = new List<patient>();
             input = FileManager.GetFileContents("patients.json", "resources\\users");
             data = JsonConvert.DeserializeObject(input);
-            patients = ((JArray)data.users).ToObject<List<Patient>>();
+            patients = ((JArray)data.users).ToObject<List<patient>>();
 
-            foreach (Patient p in patients)
+            foreach (patient p in patients)
                 users.Add(p);
-            foreach (Doctor d in doctors)
+            foreach (doctor d in doctors)
                 users.Add(d);
             list_mutex.ReleaseMutex();
             return;
@@ -129,9 +129,9 @@ namespace RHServer.Networking
             {
                 foreach (User u in users)
                 {
-                    if (u is Doctor)
+                    if (u is doctor)
                     {
-                        Doctor d = (Doctor) u;
+                        doctor d = (doctor) u;
                         if (d.hash == (String)data.hash)
                         {
                             if (d.active)
@@ -162,9 +162,9 @@ namespace RHServer.Networking
             {
                 foreach (User u in users)
                 {
-                    if (u is Doctor)
+                    if (u is doctor)
                     {
-                        Doctor d = (Doctor)u;
+                        doctor d = (doctor)u;
                         if (d.id.Equals((Guid)data.id))
                         {
                             if (d.active)

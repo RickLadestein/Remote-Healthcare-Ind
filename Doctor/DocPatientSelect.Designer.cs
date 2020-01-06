@@ -48,7 +48,7 @@
             "asdf2",
             "adsf"});
             this.cbxPatientSelect.Location = new System.Drawing.Point(24, 23);
-            this.cbxPatientSelect.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.cbxPatientSelect.Margin = new System.Windows.Forms.Padding(6);
             this.cbxPatientSelect.Name = "cbxPatientSelect";
             this.cbxPatientSelect.Size = new System.Drawing.Size(396, 33);
             this.cbxPatientSelect.TabIndex = 0;
@@ -58,7 +58,7 @@
             // btnSelectPatient
             // 
             this.btnSelectPatient.Location = new System.Drawing.Point(24, 394);
-            this.btnSelectPatient.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.btnSelectPatient.Margin = new System.Windows.Forms.Padding(6);
             this.btnSelectPatient.Name = "btnSelectPatient";
             this.btnSelectPatient.Size = new System.Drawing.Size(562, 65);
             this.btnSelectPatient.TabIndex = 1;
@@ -69,7 +69,7 @@
             // btnNewPatient
             // 
             this.btnNewPatient.Location = new System.Drawing.Point(436, 21);
-            this.btnNewPatient.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.btnNewPatient.Margin = new System.Windows.Forms.Padding(6);
             this.btnNewPatient.Name = "btnNewPatient";
             this.btnNewPatient.Size = new System.Drawing.Size(150, 44);
             this.btnNewPatient.TabIndex = 2;
@@ -84,13 +84,12 @@
             this.groupBox1.Controls.Add(this.lblDetailsName);
             this.groupBox1.Controls.Add(this.btnEditPatient);
             this.groupBox1.Location = new System.Drawing.Point(24, 75);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(6);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(6);
             this.groupBox1.Size = new System.Drawing.Size(562, 308);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "groupBox1";
             // 
             // lblDetailsDate
             // 
@@ -125,7 +124,7 @@
             // btnEditPatient
             // 
             this.btnEditPatient.Location = new System.Drawing.Point(400, 252);
-            this.btnEditPatient.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.btnEditPatient.Margin = new System.Windows.Forms.Padding(6);
             this.btnEditPatient.Name = "btnEditPatient";
             this.btnEditPatient.Size = new System.Drawing.Size(150, 44);
             this.btnEditPatient.TabIndex = 0;
@@ -142,10 +141,11 @@
             this.Controls.Add(this.btnNewPatient);
             this.Controls.Add(this.btnSelectPatient);
             this.Controls.Add(this.cbxPatientSelect);
-            this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.Margin = new System.Windows.Forms.Padding(6);
             this.Name = "DocPatientSelect";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "DocPatientSelect";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.DocPatientSelect_FormClosed);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);

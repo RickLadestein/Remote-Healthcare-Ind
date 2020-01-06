@@ -72,5 +72,10 @@ namespace Doctor
             btnSelectPatient.Enabled = true;
             btnEditPatient.Enabled = true;
         }
+
+        private void DocPatientSelect_FormClosed(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
     }
 }
