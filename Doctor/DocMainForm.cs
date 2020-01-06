@@ -99,7 +99,7 @@ namespace Doctor
             int age = DateTime.Today.Year - newPat.birthday.Year;
             if (newPat.birthday.Date > DateTime.Today.AddYears(-age)) age--;
             
-            lblPatBirthday.Text = "Birthday: " + newPat.birthday.Date.ToShortDateString() + " (" + age +")";
+            lblPatBirthday.Text = "Date of Birth: " + newPat.birthday.Date.ToShortDateString() + " (" + age +")";
 
             MessageBox.Show("Import runs!");
 
@@ -113,7 +113,7 @@ namespace Doctor
                 // Clear all while invisible
 
                 curPat = null;
-                lblPatBirthday.Text = "Birthday: ";
+                lblPatBirthday.Text = "Date of Birth: ";
                 lblPatGender.Text = "Gender: ";
                 lblPatName.Text = "Name: ";
                 lbxPrevTests.Items.Clear();

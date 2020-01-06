@@ -24,10 +24,15 @@ namespace Doctor
                 
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btnStart_Click(object sender, EventArgs e)
+        {
+            btnStart.Visible = false;
+            
+        }
+
+        private void btnFinish_Click(object sender, EventArgs e)
         {
             this.Close();
-
         }
     }
 }

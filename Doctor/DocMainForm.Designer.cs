@@ -86,27 +86,27 @@
             this.lblPatBirthday.AutoSize = true;
             this.lblPatBirthday.Location = new System.Drawing.Point(7, 66);
             this.lblPatBirthday.Name = "lblPatBirthday";
-            this.lblPatBirthday.Size = new System.Drawing.Size(141, 13);
+            this.lblPatBirthday.Size = new System.Drawing.Size(69, 13);
             this.lblPatBirthday.TabIndex = 2;
-            this.lblPatBirthday.Text = "Date of Birth: xx/xx/xxxx (xx)";
+            this.lblPatBirthday.Text = "Date of Birth:";
             // 
             // lblPatGender
             // 
             this.lblPatGender.AutoSize = true;
             this.lblPatGender.Location = new System.Drawing.Point(7, 43);
             this.lblPatGender.Name = "lblPatGender";
-            this.lblPatGender.Size = new System.Drawing.Size(53, 13);
+            this.lblPatGender.Size = new System.Drawing.Size(45, 13);
             this.lblPatGender.TabIndex = 1;
-            this.lblPatGender.Text = "Gender: x";
+            this.lblPatGender.Text = "Gender:";
             // 
             // lblPatName
             // 
             this.lblPatName.AutoSize = true;
             this.lblPatName.Location = new System.Drawing.Point(7, 20);
             this.lblPatName.Name = "lblPatName";
-            this.lblPatName.Size = new System.Drawing.Size(74, 13);
+            this.lblPatName.Size = new System.Drawing.Size(41, 13);
             this.lblPatName.TabIndex = 0;
-            this.lblPatName.Text = "Name: xxx xxx";
+            this.lblPatName.Text = "Name: ";
             // 
             // groupBox2
             // 
