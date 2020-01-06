@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using RHServer.IO;
 using RHServer.Profiles;
+using System.Threading;
 
 namespace RHServer.Networking
 {
@@ -20,13 +21,12 @@ namespace RHServer.Networking
             return instance;
         }
 
-
-        private List<Doctor> doctors;
-        private List<Patient> patients;
+        private List<User> users;
+        private Mutex list_mutex;
         private DataRouter()
         {
-            doctors = new List<Doctor>();
-            patients = new List<Patient>();
+            list_mutex = new Mutex();
+            users = new List<User>();
 
             ImportData();
         }
@@ -46,13 +46,22 @@ namespace RHServer.Networking
 
         private void ImportData()
         {
+            list_mutex.WaitOne();
+            List<Doctor> doctors = new List<Doctor>();
             string input = FileManager.GetFileContents("doctors.json", "resources\\users");
             dynamic data = JsonConvert.DeserializeObject(input);
             doctors = ((JArray) data.users).ToObject<List<Doctor>>();
 
+            List<Patient> patients = new List<Patient>();
             input = FileManager.GetFileContents("patients.json", "resources\\users");
             data = JsonConvert.DeserializeObject(input);
             patients = ((JArray)data.users).ToObject<List<Patient>>();
+
+            foreach (Patient p in patients)
+                users.Add(p);
+            foreach (Doctor d in doctors)
+                users.Add(d);
+            list_mutex.ReleaseMutex();
             return;
         }
 #endregion
@@ -112,55 +121,85 @@ namespace RHServer.Networking
 
         private void Login(Connection c, dynamic data)
         {
+            list_mutex.WaitOne();
             if (data.type == USERTYPES.PATIENT)
             {
                 //do something if patient wants to login
             } else
             {
-                foreach (Doctor d in doctors)
+                foreach (User u in users)
                 {
-                    if (d.hash == (String)data.hash)
+                    if (u is Doctor)
                     {
-                        if (d.active)
+                        Doctor d = (Doctor) u;
+                        if (d.hash == (String)data.hash)
                         {
-                            SendDataToConnection(c, DataPackages.Response_Error("user/login", "User already logged in"));
+                            if (d.active)
+                            {
+                                SendDataToConnection(c, DataPackages.Response_Error("user/login", "User already logged in"));
+                            }
+                            else
+                            {
+                                d.active = true;
+                                SendDataToConnection(c, DataPackages.Response_Ack("user/login", "", d.id));
+                            }
+                            break;
                         }
-                        else
-                        {
-                            d.active = true;
-                            SendDataToConnection(c, DataPackages.Response_Ack("user/login", "", d.id));
-                        }
-                        break;
                     }
                 }
                     SendDataToConnection(c, DataPackages.Response_Error("user/login", "no user found with username or password combination"));
             }
+            list_mutex.ReleaseMutex();
         }
 
         private void Logout(Connection c, dynamic data)
         {
+            list_mutex.WaitOne();
             if (data.type == USERTYPES.PATIENT)
             {
                 //do something if patient
             } else
             {
-                foreach (Doctor d in doctors) 
+                foreach (User u in users)
                 {
-                    if (d.id.Equals((Guid)data.id))
+                    if (u is Doctor)
                     {
-                        if(d.active)
+                        Doctor d = (Doctor)u;
+                        if (d.id.Equals((Guid)data.id))
                         {
-                            d.active = false;
-                            SendDataToConnection(c, DataPackages.Response_Ack("user/logout", "", null));
-                        } else
-                        {
-                            SendDataToConnection(c, DataPackages.Response_Error("user/logout", "user not logged in"));
+                            if (d.active)
+                            {
+                                d.active = false;
+                                SendDataToConnection(c, DataPackages.Response_Ack("user/logout", "", null));
+                            }
+                            else
+                            {
+                                SendDataToConnection(c, DataPackages.Response_Error("user/logout", "user not logged in"));
+                            }
+                            return;
                         }
-                        return;
                     }
                 }
                 SendDataToConnection(c, DataPackages.Response_Error("user/logout", "uid not found for user"));
             }
+            list_mutex.ReleaseMutex();
+        }
+
+        private void CheckLogin(Connection c, Guid id)
+        {
+            list_mutex.WaitOne();
+            bool found = false;
+            foreach(User p in users)
+            {
+                if (p.id == id)
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if(!found)
+            list_mutex.ReleaseMutex();
         }
 
         private void CreateFile(Connection c, dynamic data)

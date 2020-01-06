@@ -48,7 +48,7 @@ namespace Patient
 
         private void DummyButton_Click(object sender, EventArgs e)
         {
-            DataRouter.GetInstance().SendMessage(c, Datapackages.Message_GetFilenames("resources//data", "txt"), "file/getnames", this, true);
+            DataRouter.GetInstance().SendMessage(c, Datapackages.Message_GetFilenames(new Guid(), "resources//data", "txt"), "file/getnames", this, true);
         }
     }
 }

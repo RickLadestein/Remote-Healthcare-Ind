@@ -4,7 +4,7 @@ using System.Text;
 
 namespace RHServer.Profiles
 {
-    class Patient
+    class Patient : User
     {
         public string first_name;
         public string sur_name;

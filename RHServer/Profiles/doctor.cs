@@ -4,12 +4,11 @@ using System.Text;
 
 namespace RHServer.Profiles
 {
-    class Doctor
+    class Doctor : User
     {
         public string username;
         public string hash;
         public Boolean active;
-        public Guid id;
 
         public Doctor(string username, string hash)
         {

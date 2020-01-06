@@ -30,7 +30,7 @@ namespace Patient.Communication
                 command = "ALIVE"
             });
         }
-        public static String Message_Ack(string msg, Object data)
+        public static String Message_Ack(Guid id, string msg, Object data)
         {
             return JsonConvert.SerializeObject(new
             {
@@ -43,39 +43,42 @@ namespace Patient.Communication
             });
         }
 
-        public static String Message_Error(string msg, Object data)
+        public static String Message_Error(Guid id, string msg, Object data)
         {
             return JsonConvert.SerializeObject(new
             {
                 msg = "ERROR",
                 data = new
                 {
+                    id = id,
                     info = msg,
                     data = data
                 }
             });
         }
 
-        public static String Message_GetFilenames(string location, string format)
+        public static String Message_GetFilenames(Guid id, string location, string format)
         {
             return JsonConvert.SerializeObject(new
             {
                 command = "file/getnames",
                 data = new
                 {
+                    id = id,
                     location = location,
                     format = format
                 }
             });
         }
 
-        public static String Message_CreateFile(string location, string filename, Object data)
+        public static String Message_CreateFile(Guid id, string location, string filename, Object data)
         {
             return JsonConvert.SerializeObject(new
             {
                 command = "file/create",
                 data = new
                 {
+                    id = id,
                     location = location,
                     file = filename,
                     data = data
@@ -83,26 +86,28 @@ namespace Patient.Communication
             });
         }
 
-        public static String Message_DeleteFile(string location, string filename)
+        public static String Message_DeleteFile(Guid id, string location, string filename)
         {
             return JsonConvert.SerializeObject(new
             {
                 command = "file/delete",
                 data = new
                 {
+                    id = id,
                     location = location,
                     file = filename
                 }
             });
         }
 
-        public static String Message_GetFile(string location, string filename)
+        public static String Message_GetFile(Guid id, string location, string filename)
         {
             return JsonConvert.SerializeObject(new
             {
                 command = "file/get",
                 data = new
                 {
+                    id = id,
                     location = location,
                     file = filename
                 }
@@ -130,37 +135,40 @@ namespace Patient.Communication
                     type = type,
                     hash = output
                 }
-            });
+            }); ;
         }
 
-        public static String Message_Logout(String uid)
+        public static String Message_Logout(Guid id)
         {
             return JsonConvert.SerializeObject(new 
             { 
                 command = "user/logout",
                 data = new
                 {
-                    uid = uid
+                    id = id
                 }
             });
         }
 
-        public static String Message_TrainingData(String doctor_uid, Object data)
+        public static String Message_TrainingData(Guid id, String doctor_uid, Object data)
         {
             return JsonConvert.SerializeObject(new
             {
                 command = "user/data",
+                id = id,
                 data = data
             });
         }
 
-        public static String Message_Message(String patient_uid, String msg)
+        public static String Message_Message(Guid id, String patient_uid, String msg)
         {
             return JsonConvert.SerializeObject(new
             {
                 command = "user/msg",
                 data = new
                 {
+                    id = id,
+                    target = patient_uid,
                     msg = msg
                 }
             });
