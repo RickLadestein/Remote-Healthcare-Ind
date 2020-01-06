@@ -12,9 +12,9 @@ using Patient.Communication;
 
 namespace Patient
 {
-    public partial class Form1 : Form, ConnectionEventListener, ConnectionResponseListener
+    public partial class Form1 : Form, ConnectionResponseListener
     {
-        private Connection c;
+        private Socket c;
         private Guid id;
         public Form1()
         {
@@ -25,23 +25,25 @@ namespace Patient
 
         private void StartConnection()
         {
-            c = new Connection("localhost", 25565, this);
-            c.setParentForm(this, this);
+            c = new Socket("localhost", 25565);
+            c.onMessageReceived += OnMessageReceived;
+            c.onSocketError += OnSocketError;
+            c.Start();
+            DataRouter.GetInstance().setGenericMessageListener(this);
         }
 
-        public void onConnectionError(Connection c, Exception e)
-        {
-            Console.WriteLine("[Patient]: " + e.Message);
-        }
 
-        public void onDataReceived(Connection c, byte[] data, ushort length)
+        public void OnMessageReceived(Socket handle, byte[] data, int length)
         {
             if (this.Visible)
             {
                 String message = Encoding.UTF8.GetString(data);
-                DataRouter.GetInstance().OnMessageReceived(c, message);
+                DataRouter.GetInstance().OnMessageReceived(handle, message);
             }
-            
+        }
+        public void OnSocketError(Socket s, String message)
+        {
+            Console.WriteLine("[Patient]: " + message);
         }
 
         public void onMessageResponse(string command, dynamic data)
@@ -52,7 +54,7 @@ namespace Patient
 
         public void onMessageResponseError(string command, string info)
         {
-            throw new NotImplementedException();
+            Debug.WriteLine("Errors are not implemented yet");
         }
 
         private void DummyButton_Click(object sender, EventArgs e)

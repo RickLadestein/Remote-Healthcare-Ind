@@ -25,14 +25,14 @@ namespace Patient.Communication
             queries = new List<Tuple<ConnectionResponseListener, string>>();
         }
 
-        public void SendMessage(Connection c, string msg, string command, ConnectionResponseListener l, bool isQuery)
+        public void SendMessage(Socket c, string msg, string command, ConnectionResponseListener l, bool isQuery)
         {
             if(isQuery)
             {
                 queries.Add(new Tuple<ConnectionResponseListener, string>(l, command));
             }
             byte[] data = Encoding.UTF8.GetBytes(msg);
-            c.SendData(data, (ushort)data.Length);
+            c.SendMessage(data);
         }
 
         private void ParseMessageResponse(string code, string command, dynamic data)
@@ -52,7 +52,7 @@ namespace Patient.Communication
             }
         }
 
-        public void OnMessageReceived(Connection c, String msg)
+        public void OnMessageReceived(Socket c, String msg)
         {
             dynamic data = JsonConvert.DeserializeObject(msg);
             String code = (String)data.command;

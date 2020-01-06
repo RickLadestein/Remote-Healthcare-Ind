@@ -56,9 +56,9 @@
     <Compile Include="Bike\BikeHandler.cs" />
     <Compile Include="Bike\BikeMeasurement.cs" />
     <Compile Include="Bike\IBikeMeasurementListener.cs" />
-    <Compile Include="Communication\Connection.cs" />
     <Compile Include="Communication\Datapackages.cs" />
     <Compile Include="Communication\DataRouter.cs" />
+    <Compile Include="Communication\Socket.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

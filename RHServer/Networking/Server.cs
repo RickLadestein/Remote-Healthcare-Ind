@@ -29,6 +29,7 @@ namespace RHServer.Networking
             connections = new List<Socket>();
             DataRouter.getInstance();
             instance = this;
+
             tick_timer = new System.Timers.Timer();
             tick_timer.Interval = 1d / 60d;
             tick_timer.Elapsed += Tick_timer_Elapsed;
