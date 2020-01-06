@@ -40,50 +40,58 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(39, 110);
+            this.label1.Location = new System.Drawing.Point(78, 212);
+            this.label1.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(55, 13);
+            this.label1.Size = new System.Drawing.Size(110, 25);
             this.label1.TabIndex = 100;
             this.label1.Text = "Username";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(41, 136);
+            this.label2.Location = new System.Drawing.Point(82, 262);
+            this.label2.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(53, 13);
+            this.label2.Size = new System.Drawing.Size(106, 25);
             this.label2.TabIndex = 101;
             this.label2.Text = "Password";
             // 
             // txtUsername
             // 
-            this.txtUsername.Location = new System.Drawing.Point(100, 107);
+            this.txtUsername.Location = new System.Drawing.Point(200, 206);
+            this.txtUsername.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.txtUsername.Name = "txtUsername";
-            this.txtUsername.Size = new System.Drawing.Size(167, 20);
+            this.txtUsername.Size = new System.Drawing.Size(330, 31);
             this.txtUsername.TabIndex = 0;
             // 
             // txtPassword
             // 
-            this.txtPassword.Location = new System.Drawing.Point(100, 133);
+            this.txtPassword.Location = new System.Drawing.Point(200, 256);
+            this.txtPassword.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.txtPassword.Name = "txtPassword";
-            this.txtPassword.Size = new System.Drawing.Size(167, 20);
+            this.txtPassword.Size = new System.Drawing.Size(330, 31);
             this.txtPassword.TabIndex = 1;
             this.txtPassword.UseSystemPasswordChar = true;
             // 
             // imgLogo
             // 
+            this.imgLogo.BackgroundImage = global::Doctor.Properties.Resources.T2900_Tacx_FLUX_Smart_InUse_back_right_interactive_direct_drive_best_price_indoor_trainer_gallery;
+            this.imgLogo.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.imgLogo.InitialImage = global::Doctor.Properties.Resources.raw_cenapicksrock2_candl2;
-            this.imgLogo.Location = new System.Drawing.Point(12, 12);
+            this.imgLogo.Location = new System.Drawing.Point(24, 23);
+            this.imgLogo.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.imgLogo.Name = "imgLogo";
-            this.imgLogo.Size = new System.Drawing.Size(282, 88);
+            this.imgLogo.Size = new System.Drawing.Size(564, 169);
             this.imgLogo.TabIndex = 4;
             this.imgLogo.TabStop = false;
             // 
             // btnLogin
             // 
-            this.btnLogin.Location = new System.Drawing.Point(40, 159);
+            this.btnLogin.Location = new System.Drawing.Point(80, 306);
+            this.btnLogin.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.btnLogin.Name = "btnLogin";
-            this.btnLogin.Size = new System.Drawing.Size(227, 23);
+            this.btnLogin.Size = new System.Drawing.Size(454, 44);
             this.btnLogin.TabIndex = 2;
             this.btnLogin.Text = "Login";
             this.btnLogin.UseVisualStyleBackColor = true;
@@ -92,9 +100,10 @@
             // DocLoginForm
             // 
             this.AcceptButton = this.btnLogin;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(306, 190);
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.ClientSize = new System.Drawing.Size(612, 365);
             this.Controls.Add(this.btnLogin);
             this.Controls.Add(this.imgLogo);
             this.Controls.Add(this.txtPassword);
@@ -102,6 +111,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "DocLoginForm";
