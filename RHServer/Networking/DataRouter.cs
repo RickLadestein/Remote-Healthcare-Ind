@@ -64,8 +64,14 @@ namespace RHServer.Networking
             list_mutex.ReleaseMutex();
             return;
         }
-#endregion
-        public void ParseCommand(Connection c, string msg)
+        #endregion
+        public void OnMessageReceived(Socket handle, byte[] data, int length)
+        {
+            String output = Encoding.UTF8.GetString(data);
+            ParseCommand(handle, output);
+        }
+
+        public void ParseCommand(Socket c, string msg)
         {
             Logger.LogReceiveMessage(msg);
             try
@@ -120,7 +126,7 @@ namespace RHServer.Networking
             }
         }
 
-        private void Login(Connection c, dynamic data)
+        private void Login(Socket c, dynamic data)
         {
             list_mutex.WaitOne();
             bool found = false;
@@ -147,7 +153,7 @@ namespace RHServer.Networking
             list_mutex.ReleaseMutex();
         }
 
-        private void Logout(Connection c, dynamic data)
+        private void Logout(Socket c, dynamic data)
         {
             list_mutex.WaitOne();
             bool found = false;
@@ -172,7 +178,7 @@ namespace RHServer.Networking
             list_mutex.ReleaseMutex();
         }
 
-        private void CheckLogin(Connection c, Guid id)
+        private void CheckLogin(Socket c, Guid id)
         {
             list_mutex.WaitOne();
             bool found = false;
@@ -189,7 +195,7 @@ namespace RHServer.Networking
             list_mutex.ReleaseMutex();
         }
 
-        private void CreateFile(Connection c, dynamic data)
+        private void CreateFile(Socket c, dynamic data)
         {
             bool succes = FileManager.CreateFile(data.file, data.location);
             if (succes)
@@ -202,7 +208,7 @@ namespace RHServer.Networking
             }
         }
 
-        private void DeleteFile(Connection c, dynamic data)
+        private void DeleteFile(Socket c, dynamic data)
         {
             bool succes = FileManager.DeleteFile(data.file, data.location);
             if(succes)
@@ -215,14 +221,14 @@ namespace RHServer.Networking
             }
         }
 
-        private void GetFileNames(Connection c, dynamic data)
+        private void GetFileNames(Socket c, dynamic data)
         {
             String path = data.location;
             List<String> files = FileManager.GetFileNames(path);
             SendDataToConnection(c, DataPackages.Response_Ack("file/getnames", "", files));
         }
 
-        private void GetFile(Connection c, dynamic data)
+        private void GetFile(Socket c, dynamic data)
         {
             String path = data.location;
             String file = data.file;
@@ -233,12 +239,12 @@ namespace RHServer.Networking
                 SendDataToConnection(c, DataPackages.Response_Ack("file/get", "", contents));
         }
 
-        private void SendMessage(Connection c, dynamic data)
+        private void SendMessage(Socket c, dynamic data)
         {
             String target = data.target;
             String command = "user/msg";
-            Connection t_connection = null;
-            foreach (Connection con in Server.instance.connections)
+            Socket t_connection = null;
+            foreach (Socket con in Server.instance.connections)
                 if (con.id == target)
                 {
                     t_connection = con;
@@ -250,11 +256,11 @@ namespace RHServer.Networking
                 SendDataToConnection(c, DataPackages.Response_Error(command, "Could not send data to target: Target does not exist"));
         }
 
-        private void SendDataToConnection(Connection c, String msg)
+        private void SendDataToConnection(Socket c, String msg)
         {
             byte[] output = Encoding.UTF8.GetBytes(msg);
             ushort length = (ushort)msg.Length;
-            c.SendData(output, length);
+            c.SendMessage(output);
             Logger.LogSendMessage(msg);
         }
     }
