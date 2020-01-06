@@ -13,16 +13,26 @@ namespace Doctor
 {
     public partial class DocPatientSelect : Form
     {
+        private Doctor curDoc;
+        private Patient SelectedPatient { get; set; }
+
         public DocPatientSelect()
         {
             InitializeComponent();
             MessageBox.Show("Something went wrong. Please contact your system administrator!\nError code: ERR_NO_DOCNAME");
         }
-        public DocPatientSelect(string docname)
+        public DocPatientSelect(Doctor doctor)
         {
             InitializeComponent();
             btnSelectPatient.Enabled = false;
             btnEditPatient.Enabled = false;
+
+            curDoc = doctor;
+        }
+
+        public Patient GetSelectedPatient()
+        {
+            return SelectedPatient;
         }
 
         private void BtnNewPatient_Click(object sender, EventArgs e)
@@ -52,8 +62,10 @@ namespace Doctor
 
             if (cbxPatientSelect.SelectedIndex >= 0)
             {
-                Form dm = new AstrandDoctorGUI(cbxPatientSelect.SelectedItem.ToString());
-                dm.Show();
+                //Form dm = new AstrandDoctorGUI(curDoc);
+                //dm.Show();
+
+                SelectedPatient = new Patient("Piet", "Hein", new DateTime(1577, 11, 25), true, 178, 78);
                 this.Close();
             }
             else
@@ -75,7 +87,7 @@ namespace Doctor
 
         private void DocPatientSelect_FormClosed(object sender, EventArgs e)
         {
-            Application.Exit();
+            //Application.Exit();
         }
     }
 }

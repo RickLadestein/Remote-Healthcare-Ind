@@ -12,6 +12,8 @@ namespace Doctor
 {
     public partial class DocLoginForm : Form
     {
+        Doctor doc;
+
         public DocLoginForm()
         {
             InitializeComponent();
@@ -21,10 +23,13 @@ namespace Doctor
         {
             if (VerifyLogin(txtUsername.Text, txtPassword.Text))
             {
-                MessageBox.Show("Hoi " + txtUsername.Text + "!");
-                Form temp = new DocPatientSelect(txtUsername.Text);
-                temp.Show();
-                this.Hide();
+                //MessageBox.Show("Hoi " + txtUsername.Text + "!");
+                //Form main = new AstrandDoctorGUI(this, new Doctor(txtUsername.Text, txtPassword.Text));
+                //main.Parent = this;
+                //main.Show();
+                //this.Hide();
+                doc = new Doctor(txtUsername.Text, txtPassword.Text);
+                this.Close();
             }
             else
             {
@@ -49,6 +54,11 @@ namespace Doctor
         private void DocLoginForm_KeyPress(object sender, KeyPressEventArgs e)
         {
 
+        }
+
+        public Doctor GetDoctor()
+        {
+            return doc;
         }
     }
 }

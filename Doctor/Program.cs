@@ -18,7 +18,7 @@ namespace Doctor
             string msg = Datapackages.message_Login("Hello", "world", Datapackages.USERTYPES.DOCTOR);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new DocLoginForm());
+            Application.Run(new AstrandDoctorGUI());
         }
     }
 }
