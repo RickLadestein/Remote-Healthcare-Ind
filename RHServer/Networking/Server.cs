@@ -14,9 +14,6 @@ namespace RHServer.Networking
         private TcpListener listener;
         private System.Timers.Timer tickrate;
 
-        private ServerCommandHandler command_handler;
-        private ICommandListener handle;
-
         private ConnectionWorker worker;
         private Thread thread;
 
@@ -30,9 +27,7 @@ namespace RHServer.Networking
             tickrate = new System.Timers.Timer(1000 / 128);
             tickrate.AutoReset = true;
             tickrate.Elapsed += onTimerEvent;
-
-            command_handler = ServerCommandHandler.GetInstance();
-            handle = command_handler;
+            DataRouter.getInstance();
         }
 
         public void Stop()
@@ -66,16 +61,40 @@ namespace RHServer.Networking
 
         public void onTimerEvent(Object source, ElapsedEventArgs e)
         {
-            foreach(Connection c in connections)
+            for (int i = 0; i < connections.Count; i++)
+                try
+                {
+                    connections[i].ReadData();
+                }
+                catch (Exception ex) { }
+
+            for (int i = 0; i < connections.Count; i++)
+                try
+                {
+                    byte[] data = Encoding.UTF8.GetBytes(DataPackages.Message_Alive());
+                    connections[i].SendData(data, (ushort)data.Length);
+                }
+                catch (Exception ex) { }
+
+            for (int i = 0; i < connections.Count; i++)
+                try
+                {
+                    connections[i].update();
+                }
+                catch (Exception ex) { }
+
+            for (int i = 0; i < deletions.Count; i++)
             {
-                c.ReadData();
+                string endpoint = deletions[i].ip_endpoint;
+                Connection toremove = null;
+                for (int j = 0; j < connections.Count; j++)
+                    if (connections[j].ip_endpoint == endpoint)
+                    {
+                        toremove = connections[j];
+                        j = connections.Count;
+                    }
+                connections.Remove(toremove);
             }
-
-            foreach (Connection c in connections)
-                c.update();
-
-            foreach (Connection c in deletions)
-                connections.Remove(c);
             deletions.Clear();
         }
 
@@ -88,8 +107,7 @@ namespace RHServer.Networking
         public void onDataReceived(Connection c, byte[] data, ushort length)
         {
             String output = Encoding.UTF8.GetString(data);
-            Console.WriteLine($"[Client -> Server]: {output}");
-            handle.OnCommandReceived(c, output);
+            DataRouter.getInstance().ParseCommand(c, output);
         }
 
         public void onConnectionError(Connection c, Exception e)
@@ -161,6 +179,7 @@ namespace RHServer.Networking
             ConnectionWorker worker = (ConnectionWorker) result.AsyncState;
             TcpClient client = worker.server.EndAcceptTcpClient(result);
             worker.handle.onConnect(client);
+            accepting = false;
         }
     }
 

@@ -8,66 +8,38 @@ namespace RHServer.Networking
 {
     class DataPackages
     {
-        private static DataPackages instance;
-        public static DataPackages GetInstance()
-        {
-            if (instance == null)
-                instance = new DataPackages();
-            return instance;
-        }
-
-        public String AckMessage()
+        public static String Response_Ack(string command, string info, Object data)
         {
             return JsonConvert.SerializeObject(new
             {
                 command = "ACK",
-                status = "ACK"
+                data = new
+                {
+                    command = command,
+                    info = info,
+                    data = data
+                }
             });
         }
 
-        public String AliveMessage()
+        public static String Response_Error(string command, string info)
         {
-            return JsonConvert.SerializeObject(new
+            return JsonConvert.SerializeObject(new 
             {
-                command = "GET_ALIVE"
+                command = "ERROR",
+                data = new
+                {
+                    command = command,
+                    info = info
+                }
             });
         }
 
-        public String ErrorMessage(String cmd, String msg)
+        public static String Message_Alive()
         {
             return JsonConvert.SerializeObject(new
             {
-                command = cmd,
-                status = "Error",
-                info = msg
-            });
-        }
-
-        public String LoginResponse(bool result)
-        {
-            return JsonConvert.SerializeObject(new
-            {
-                command = "SYSTEM_LOGIN",
-                result = result
-            });
-        }
-
-        public String FileNameResponse(List<String> names)
-        {
-            return JsonConvert.SerializeObject(new
-            {
-                command = "GET_FILENAMES",
-                result = names
-            });
-        }
-
-       public String FileContentResponse(String filename, String content)
-        {
-            return JsonConvert.SerializeObject(new
-            {
-                command = "GET_FILE",
-                file_name = filename,
-                content = content
+                command = "ALIVE"
             });
         }
     }
