@@ -36,18 +36,19 @@ namespace Patient
             DataRouter.GetInstance().OnMessageReceived(c, message);
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            DataRouter.GetInstance().SendMessage(this.c, Datapackages.Message_GetFilenames("resources\\data", ""), "file/getnames", this, true);
-        }
-
         public void onMessageResponse(string command, object data)
         {
+            Console.WriteLine(data);
         }
 
         public void onMessageResponseError(string command, string info)
         {
             throw new NotImplementedException();
+        }
+
+        private void DummyButton_Click(object sender, EventArgs e)
+        {
+            DataRouter.GetInstance().SendMessage(c, Datapackages.Message_GetFilenames("resources//data", "txt"), "file/getnames", this, true);
         }
     }
 }

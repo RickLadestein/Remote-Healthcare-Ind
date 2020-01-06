@@ -34,7 +34,7 @@ namespace Patient.Communication
             c.SendData(data, (ushort)data.Length);
         }
 
-        private void ParseMessageResponse(string command, dynamic data)
+        private void ParseMessageResponse(string code, string command, dynamic data)
         {
             Tuple<ConnectionResponseListener, string> query = null;
             for (int i = 0; i < queries.Count; i++)
@@ -44,9 +44,9 @@ namespace Patient.Communication
             }
             if(query != null)
             {
-                if (command == "ACK")
+                if (code == "ACK")
                     query.Item1.onMessageResponse(command, data.data.data);
-                else if (command == "ERROR")
+                else if (code == "ERROR")
                     query.Item1.onMessageResponseError(command, (string)data.info);
             }
         }
@@ -54,11 +54,13 @@ namespace Patient.Communication
         public void OnMessageReceived(Connection c, String msg)
         {
             dynamic data = JsonConvert.DeserializeObject(msg);
-            String command = (String)data.command;
-            if(command == "ACK" || command == "ERROR")
+            String code = (String)data.command;
+            if(code == "ACK" || code == "ERROR")
             {
-                ParseMessageResponse((string)data.command, data);
-            } else if(command == "ALIVE")
+                string command = (string)data.data.command;
+
+                ParseMessageResponse(code, command, data);
+            } else if(code == "ALIVE")
             {
                 SendMessage(c, Datapackages.Message_Alive(), "ALIVE", null, false);
             }

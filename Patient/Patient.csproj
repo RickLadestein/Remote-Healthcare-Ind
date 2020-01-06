@@ -56,8 +56,6 @@
     <Compile Include="Bike\BikeHandler.cs" />
     <Compile Include="Bike\BikeMeasurement.cs" />
     <Compile Include="Bike\IBikeMeasurementListener.cs" />
-    <Compile Include="Commands\Receive\BikeMeasurement.cs" />
-    <Compile Include="Commands\Receive\BikeState.cs" />
     <Compile Include="Communication\Connection.cs" />
     <Compile Include="Communication\Datapackages.cs" />
     <Compile Include="Communication\DataRouter.cs" />
@@ -95,8 +93,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Commands\Send\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

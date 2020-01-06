@@ -75,8 +75,10 @@ namespace RHServer.Networking
                         GetFileNames(c, inner_data);
                         break;
                     case "file/create":
+                        CreateFile(c, inner_data);
                         break;
                     case "file/delete":
+                        DeleteFile(c, inner_data);
                         break;
                     case "file/get":
                         GetFile(c, inner_data);
@@ -158,6 +160,32 @@ namespace RHServer.Networking
                     }
                 }
                 SendDataToConnection(c, DataPackages.Response_Error("user/logout", "uid not found for user"));
+            }
+        }
+
+        private void CreateFile(Connection c, dynamic data)
+        {
+            bool succes = FileManager.CreateFile(data.file, data.location);
+            if (succes)
+            {
+                FileManager.WriteFileContents(data.file, data.location, data.data);
+                this.SendDataToConnection(c, DataPackages.Response_Ack("file/create", "", null));
+            } else
+            {
+                this.SendDataToConnection(c, DataPackages.Response_Error("file/create", "Could not create file: file already exists"));
+            }
+        }
+
+        private void DeleteFile(Connection c, dynamic data)
+        {
+            bool succes = FileManager.DeleteFile(data.file, data.location);
+            if(succes)
+            {
+                this.SendDataToConnection(c, DataPackages.Response_Ack("file/delete", "", null));
+            }
+            else
+            {
+                this.SendDataToConnection(c, DataPackages.Response_Error("file/delete", "Could not delete file: file does not exist"));
             }
         }
 
