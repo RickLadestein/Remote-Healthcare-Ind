@@ -160,13 +160,14 @@ namespace Patient.Communication
             });
         }
 
-        public static String Message_Message(Guid id, String patient_uid, String msg)
+        public static String Message_Message(string id, String patient_uid, String msg)
         {
             return JsonConvert.SerializeObject(new
             {
                 command = "user/msg",
                 data = new
                 {
+                    command = "user/msg",
                     id = id,
                     target = patient_uid,
                     msg = msg

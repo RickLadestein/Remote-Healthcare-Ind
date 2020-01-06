@@ -42,5 +42,14 @@ namespace RHServer.Networking
                 command = "ALIVE"
             });
         }
+
+        public static String Message_Generic(string command, object data)
+        {
+            return JsonConvert.SerializeObject(new
+            {
+                command = command,
+                data = data
+            });
+        }
     }
 }

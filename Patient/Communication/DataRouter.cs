@@ -11,6 +11,7 @@ namespace Patient.Communication
     class DataRouter
     {
         public static DataRouter instance;
+        private ConnectionResponseListener c_l;
         public static DataRouter GetInstance()
         {
             if (instance == null)
@@ -45,9 +46,9 @@ namespace Patient.Communication
             if(query != null)
             {
                 if (code == "ACK")
-                    query.Item1.onMessageResponse(command, data.data.data);
+                    query.Item1.onMessageResponse(command, data.data);
                 else if (code == "ERROR")
-                    query.Item1.onMessageResponseError(command, (string)data.info);
+                    query.Item1.onMessageResponseError(command, (string)data.data.info);
             }
         }
 
@@ -58,18 +59,32 @@ namespace Patient.Communication
             if(code == "ACK" || code == "ERROR")
             {
                 string command = (string)data.data.command;
-
                 ParseMessageResponse(code, command, data);
             } else if(code == "ALIVE")
             {
                 SendMessage(c, Datapackages.Message_Alive(), "ALIVE", null, false);
+            } else
+            {
+                string command = (string)data.data.command;
+                if(this.c_l != null)
+                {
+                    this.c_l.onGenericMessageReceived(command, data);
+                }
+                
             }
+        }
+
+        public void setGenericMessageListener(ConnectionResponseListener l)
+        {
+            this.c_l = l;
         }
     }
 }
 
-interface ConnectionResponseListener
+public interface ConnectionResponseListener
 {
-    void onMessageResponse(string command, object data);
+    void onMessageResponse(string command, dynamic data);
     void onMessageResponseError(string command, string info);
+
+    void onGenericMessageReceived(string command, dynamic data);
 }

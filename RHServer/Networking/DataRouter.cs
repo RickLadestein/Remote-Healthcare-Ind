@@ -101,6 +101,7 @@ namespace RHServer.Networking
                     case "user/data":
                         break;
                     case "user/msg":
+                        SendMessage(c, inner_data);
                         break;
                     case "patients/get_online":
                         break;
@@ -122,66 +123,52 @@ namespace RHServer.Networking
         private void Login(Connection c, dynamic data)
         {
             list_mutex.WaitOne();
-            if (data.type == USERTYPES.PATIENT)
-            {
-                //do something if patient wants to login
-            } else
-            {
-                foreach (User u in users)
+            bool found = false;
+            String hash = (String) data.hash;
+            foreach (User u in users)
+                if (u.hash == hash && !found)
                 {
-                    if (u is Doctor)
+                    if (u.active)
                     {
-                        Doctor d = (Doctor) u;
-                        if (d.hash == (String)data.hash)
-                        {
-                            if (d.active)
-                            {
-                                SendDataToConnection(c, DataPackages.Response_Error("user/login", "User already logged in"));
-                            }
-                            else
-                            {
-                                d.active = true;
-                                SendDataToConnection(c, DataPackages.Response_Ack("user/login", "", d.id));
-                            }
-                            break;
-                        }
+                        SendDataToConnection(c, DataPackages.Response_Error("user/login", "Could not login user: User does is already logged in"));
+                    }
+                    else
+                    {
+                        u.active = true;
+                        u.id = Guid.NewGuid();
+                        c.id = u.id.ToString();
+                        SendDataToConnection(c, DataPackages.Response_Ack("user/login", u.id.ToString(), null));
+                        found = true;
+                        break;
                     }
                 }
-                    SendDataToConnection(c, DataPackages.Response_Error("user/login", "no user found with username or password combination"));
-            }
+            if (!found)
+                SendDataToConnection(c, DataPackages.Response_Error("user/login", "Could not login user: No user exists with that Username/Password combination"));
             list_mutex.ReleaseMutex();
         }
 
         private void Logout(Connection c, dynamic data)
         {
             list_mutex.WaitOne();
-            if (data.type == USERTYPES.PATIENT)
-            {
-                //do something if patient
-            } else
-            {
-                foreach (User u in users)
+            bool found = false;
+            foreach (User u in users)
+                if (u.hash == data.hash && !found)
                 {
-                    if (u is Doctor)
+                    if (!u.active)
                     {
-                        Doctor d = (Doctor)u;
-                        if (d.id.Equals((Guid)data.id))
-                        {
-                            if (d.active)
-                            {
-                                d.active = false;
-                                SendDataToConnection(c, DataPackages.Response_Ack("user/logout", "", null));
-                            }
-                            else
-                            {
-                                SendDataToConnection(c, DataPackages.Response_Error("user/logout", "user not logged in"));
-                            }
-                            return;
-                        }
+                        SendDataToConnection(c, DataPackages.Response_Error("user/logout", "Could not logout user: User is not logged in"));
+                    }
+                    else
+                    {
+                        u.active = false;
+                        u.id = Guid.Empty;
+                        SendDataToConnection(c, DataPackages.Response_Ack("user/logout", u.id.ToString(), null));
+                        found = true;
+                        break;
                     }
                 }
-                SendDataToConnection(c, DataPackages.Response_Error("user/logout", "uid not found for user"));
-            }
+            if (!found)
+                SendDataToConnection(c, DataPackages.Response_Error("user/logout", "Could not logout user: User does not exist"));
             list_mutex.ReleaseMutex();
         }
 
@@ -244,6 +231,23 @@ namespace RHServer.Networking
                 SendDataToConnection(c, DataPackages.Response_Error("file/get", "Error 404: File was not found"));
             else
                 SendDataToConnection(c, DataPackages.Response_Ack("file/get", "", contents));
+        }
+
+        private void SendMessage(Connection c, dynamic data)
+        {
+            String target = data.target;
+            String command = "user/msg";
+            Connection t_connection = null;
+            foreach (Connection con in Server.instance.connections)
+                if (con.id == target)
+                {
+                    t_connection = con;
+                    break;
+                }
+            if (t_connection != null)
+                SendDataToConnection(t_connection, DataPackages.Message_Generic(command, data));
+            else
+                SendDataToConnection(c, DataPackages.Response_Error(command, "Could not send data to target: Target does not exist"));
         }
 
         private void SendDataToConnection(Connection c, String msg)

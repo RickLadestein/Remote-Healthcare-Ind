@@ -16,6 +16,7 @@ namespace RHServer.Networking
         public int message_delta_time;
         public bool connected;
         public String ip_endpoint;
+        public String id;
 
         private bool reading = false, writing = false;
         public Connection(TcpClient c, ConnectionEventListener l)

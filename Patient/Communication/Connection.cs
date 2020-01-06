@@ -38,6 +38,11 @@ namespace Patient.Communication
             this.ticktimer.Start();
         }
 
+        public void setParentForm(ConnectionResponseListener crl, ConnectionEventListener cel)
+        {
+            DataRouter.GetInstance().setGenericMessageListener(crl);
+            this.handle = cel;
+        }
         private void onTimerEvent(Object source, ElapsedEventArgs e)
         {
             this.update();

@@ -19,8 +19,12 @@ namespace RHServer.Networking
 
         public int port;
         public List<Connection> connections, deletions;
+
+        public Mutex mutex;
+        public static Server instance;
         public Server(int port)
         {
+            mutex = new Mutex();
             this.port = port;
             connections = new List<Connection>();
             deletions = new List<Connection>();
@@ -28,6 +32,7 @@ namespace RHServer.Networking
             tickrate.AutoReset = true;
             tickrate.Elapsed += onTimerEvent;
             DataRouter.getInstance();
+            instance = this;
         }
 
         public void Stop()

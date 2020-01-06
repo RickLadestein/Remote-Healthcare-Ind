@@ -7,5 +7,7 @@ namespace RHServer.Profiles
     abstract class User
     {
         public Guid id;
+        public string hash;
+        public Boolean active;
     }
 }
