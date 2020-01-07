@@ -131,6 +131,10 @@ namespace Doctor
             }
 
             this.curDoc = newDoc;
+
+            if(curDoc == null)
+                Application.Exit();
+
             lblUsername.Text = newDoc.username;
             this.Visible = true;
         }
