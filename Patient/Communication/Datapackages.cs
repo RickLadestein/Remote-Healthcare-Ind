@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Security.Cryptography;
-
+using Patient.Bike;
 namespace Patient.Communication
 {
     class Datapackages
@@ -150,13 +150,18 @@ namespace Patient.Communication
             });
         }
 
-        public static String Message_TrainingData(Guid id, String doctor_uid, Object data)
+        public static String Message_TrainingData(Guid id, String doctor_uid, BikeMeasurement data)
         {
             return JsonConvert.SerializeObject(new
             {
                 command = "user/data",
-                id = id,
-                data = data
+                data = new
+                {
+                    command = "user/data",
+                    id = id,
+                    target = doctor_uid,
+                    measurement = data
+                }
             });
         }
 

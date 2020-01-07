@@ -9,7 +9,7 @@ using System.Timers;
 
 namespace Patient.Communication
 {
-    
+
     public class Socket
     {
         public delegate void message_received_delegate(Socket handle, byte[] data, int length);
@@ -100,6 +100,7 @@ namespace Patient.Communication
             this.running = false;
             this.tickTimer.Stop();
             this.thread.Join();
+
         }
 
         public Boolean GetConnected()
@@ -182,6 +183,8 @@ namespace Patient.Communication
         private void OnTimerTick(Object source, System.Timers.ElapsedEventArgs e)
         {
             this.time_since_last_message += 1;
+            if (!this.running)
+                this.Stop();
         }
 
 

@@ -78,8 +78,6 @@ namespace RHServer.Networking
             {
                 dynamic data = JsonConvert.DeserializeObject(msg);
                 dynamic inner_data = data.data;
-                string output;
-                byte[] toSend;
                 switch ((String)data.command)
                 {
                     case "ACK":

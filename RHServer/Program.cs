@@ -29,7 +29,13 @@ namespace RHServer
         {
             while(true)
             {
-                Thread.Sleep(1);
+                Console.WriteLine("Press Esc to stop");
+                if(Console.ReadKey().KeyChar == 27)
+                {
+                    Console.WriteLine("Stopping server");
+                    server.Stop();
+                    Console.WriteLine("Server stopped");
+                }
             }
         }
     }

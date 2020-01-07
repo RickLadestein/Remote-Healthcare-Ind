@@ -48,6 +48,10 @@ namespace RHServer.Networking
             try
             {
                 worker.Stop();
+                mutex.WaitOne();
+                foreach (Socket s in connections)
+                    s.Stop();
+                mutex.ReleaseMutex();
             } catch(Exception e)
             {
                 Console.WriteLine($"[Server]: {e.Message}");
@@ -152,8 +156,14 @@ namespace RHServer.Networking
         public void onClientConnect(IAsyncResult result)
         {
             ConnectionWorker worker = (ConnectionWorker) result.AsyncState;
-            TcpClient client = worker.server.EndAcceptTcpClient(result);
-            worker.handle.onConnect(client);
+            try
+            {
+                TcpClient client = worker.server.EndAcceptTcpClient(result);
+                worker.handle.onConnect(client);
+            } catch(Exception ex)
+            {
+
+            }
             accepting = false;
         }
     }
