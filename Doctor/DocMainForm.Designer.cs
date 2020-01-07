@@ -234,14 +234,6 @@
             this.lbxPrevTests.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.lbxPrevTests.FormattingEnabled = true;
-            this.lbxPrevTests.Items.AddRange(new object[] {
-            "Array",
-            "Of",
-            "Previous",
-            "Runs",
-            "By",
-            "Current",
-            "Patient"});
             this.lbxPrevTests.Location = new System.Drawing.Point(5, 14);
             this.lbxPrevTests.Name = "lbxPrevTests";
             this.lbxPrevTests.Size = new System.Drawing.Size(176, 420);

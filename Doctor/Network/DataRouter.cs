@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Patient.Communication
+namespace Doctor.Network
 {
     class DataRouter
     {
@@ -72,6 +72,11 @@ namespace Patient.Communication
                 }
                 
             }
+        }
+
+        public void OnMessageReceivedDelegate(Socket handle, byte[] data, int length)
+        {
+            this.OnMessageReceived(handle, Encoding.UTF8.GetString(data));
         }
 
         public void setGenericMessageListener(ConnectionResponseListener l)

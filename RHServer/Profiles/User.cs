@@ -4,8 +4,10 @@ using System.Text;
 
 namespace RHServer.Profiles
 {
-    abstract class User
+    public abstract class User
     {
         public Guid id;
+        public string hash;
+        public bool active;
     }
 }

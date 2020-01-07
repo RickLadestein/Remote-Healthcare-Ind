@@ -15,7 +15,6 @@ namespace Doctor
         [STAThread]
         static void Main()
         {
-            string msg = Datapackages.message_Login("Hello", "world", Datapackages.USERTYPES.DOCTOR);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new AstrandDoctorGUI());

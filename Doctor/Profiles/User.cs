@@ -7,5 +7,6 @@ namespace Doctor
     public abstract class User
     {
         public Guid id;
+        public String hash;
     }
 }

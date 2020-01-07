@@ -9,25 +9,38 @@ using System.Timers;
 
 namespace RHServer.Networking
 {
-    class Server : ConnectionListener, ConnectionEventListener
+    class Server : ConnectionListener
     {
         private TcpListener listener;
-        private System.Timers.Timer tickrate;
 
         private ConnectionWorker worker;
         private Thread thread;
 
         public int port;
-        public List<Connection> connections, deletions;
+        public List<Socket> connections;
+
+        public Mutex mutex;
+        public static Server instance;
+        public System.Timers.Timer tick_timer;
         public Server(int port)
         {
+            mutex = new Mutex();
             this.port = port;
-            connections = new List<Connection>();
-            deletions = new List<Connection>();
-            tickrate = new System.Timers.Timer(1000 / 128);
-            tickrate.AutoReset = true;
-            tickrate.Elapsed += onTimerEvent;
+            connections = new List<Socket>();
             DataRouter.getInstance();
+            instance = this;
+
+            tick_timer = new System.Timers.Timer();
+            tick_timer.Interval = 1d / 60d;
+            tick_timer.Elapsed += Tick_timer_Elapsed;
+        }
+
+        private void Tick_timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            mutex.WaitOne();
+            foreach (Socket s in connections)
+                s.SendMessage(DataPackages.Message_Alive());
+            mutex.ReleaseMutex();
         }
 
         public void Stop()
@@ -35,6 +48,10 @@ namespace RHServer.Networking
             try
             {
                 worker.Stop();
+                mutex.WaitOne();
+                foreach (Socket s in connections)
+                    s.Stop();
+                mutex.ReleaseMutex();
             } catch(Exception e)
             {
                 Console.WriteLine($"[Server]: {e.Message}");
@@ -49,8 +66,8 @@ namespace RHServer.Networking
                 this.worker = new ConnectionWorker(listener, this);
                 thread = new Thread(new ThreadStart(worker.Start));
                 listener.Start();
-                tickrate.Start();
                 thread.Start();
+                tick_timer.Start();
                 
                 
             } catch(ArgumentOutOfRangeException e)
@@ -59,64 +76,26 @@ namespace RHServer.Networking
             }
         }
 
-        public void onTimerEvent(Object source, ElapsedEventArgs e)
-        {
-            for (int i = 0; i < connections.Count; i++)
-                try
-                {
-                    connections[i].ReadData();
-                }
-                catch (Exception ex) { }
-
-            for (int i = 0; i < connections.Count; i++)
-                try
-                {
-                    byte[] data = Encoding.UTF8.GetBytes(DataPackages.Message_Alive());
-                    connections[i].SendData(data, (ushort)data.Length);
-                }
-                catch (Exception ex) { }
-
-            for (int i = 0; i < connections.Count; i++)
-                try
-                {
-                    connections[i].update();
-                }
-                catch (Exception ex) { }
-
-            for (int i = 0; i < deletions.Count; i++)
-            {
-                string endpoint = deletions[i].ip_endpoint;
-                Connection toremove = null;
-                for (int j = 0; j < connections.Count; j++)
-                    if (connections[j].ip_endpoint == endpoint)
-                    {
-                        toremove = connections[j];
-                        j = connections.Count;
-                    }
-                connections.Remove(toremove);
-            }
-            deletions.Clear();
-        }
-
         public void onConnect(TcpClient c)
         {
-            connections.Add(new Connection(c, this));
+            Socket s = new Socket(c);
+            s.onMessageReceived += DataRouter.getInstance().OnMessageReceived;
+            s.onSocketError += OnSocketError;
+            connections.Add(s);
+            s.Start();
             Console.WriteLine($"[Server]: A Client connected [{c.Client.RemoteEndPoint.ToString()}]");
         }
 
-        public void onDataReceived(Connection c, byte[] data, ushort length)
+        
+        public void OnSocketError(Socket s, String message)
         {
-            String output = Encoding.UTF8.GetString(data);
-            DataRouter.getInstance().ParseCommand(c, output);
-        }
-
-        public void onConnectionError(Connection c, Exception e)
-        {
-            Console.WriteLine($"[Server]: Dropping Connection with {c.ip_endpoint}" +
-                $"\n reason: {e.Message}");
-            c.EndConnection();
-            deletions.Add(c);
-            Console.WriteLine($"[Server]: Connection with {c.ip_endpoint}" +
+            Console.WriteLine($"[Server]: Dropping Connection with {s.ip_endpoint}" +
+                            $"\n reason: {message}");
+            s.Stop();
+            mutex.WaitOne();
+            connections.Remove(s);
+            mutex.ReleaseMutex();
+            Console.WriteLine($"[Server]: Connection with {s.ip_endpoint}" +
                 $" terminated");
         }
     }
@@ -177,8 +156,14 @@ namespace RHServer.Networking
         public void onClientConnect(IAsyncResult result)
         {
             ConnectionWorker worker = (ConnectionWorker) result.AsyncState;
-            TcpClient client = worker.server.EndAcceptTcpClient(result);
-            worker.handle.onConnect(client);
+            try
+            {
+                TcpClient client = worker.server.EndAcceptTcpClient(result);
+                worker.handle.onConnect(client);
+            } catch(Exception ex)
+            {
+
+            }
             accepting = false;
         }
     }

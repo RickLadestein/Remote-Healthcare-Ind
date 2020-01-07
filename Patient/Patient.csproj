@@ -70,10 +70,10 @@
     <Compile Include="Bike\BikeHandler.cs" />
     <Compile Include="Bike\BikeMeasurement.cs" />
     <Compile Include="Bike\IBikeMeasurementListener.cs" />
-    <Compile Include="Communication\Connection.cs" />
     <Compile Include="Communication\Datapackages.cs" />
     <Compile Include="Communication\DataRouter.cs" />
     <Compile Include="PatGUI.cs">
+    <Compile Include="Communication\Socket.cs" />
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="PatGUI.Designer.cs">

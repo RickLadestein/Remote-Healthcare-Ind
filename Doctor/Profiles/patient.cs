@@ -22,5 +22,18 @@ namespace Doctor
             this.height = height;
             this.weight = weight;
         }
+
+        public int getAge()
+        {
+            int now = int.Parse(DateTime.Now.ToString("yyyyMMdd"));
+            int dob = int.Parse(birthday.ToString("yyyyMMdd"));
+            int age = (now - dob) / 10000;
+            return age;
+        }
+
+        public override string ToString()
+        {
+            return $"{this.first_name} {this.sur_name}";
+        }
     }
 }

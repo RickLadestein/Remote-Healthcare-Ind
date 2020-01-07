@@ -69,7 +69,6 @@
     <Compile Include="DocNewRunForm.Designer.cs">
       <DependentUpon>DocNewRunForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Network\Datapackages.cs" />
     <Compile Include="DocEditPatientForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -100,6 +99,10 @@
     <Compile Include="DocMainForm.Designer.cs">
       <DependentUpon>DocMainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Network\Datapackages.cs" />
+    <Compile Include="Network\DataRouter.cs" />
+    <Compile Include="Network\Socket.cs" />
+    <Compile Include="Profiles\BikeMeasurement.cs" />
     <Compile Include="Profiles\Doctor.cs" />
     <Compile Include="Profiles\Patient.cs" />
     <Compile Include="Profiles\User.cs" />
