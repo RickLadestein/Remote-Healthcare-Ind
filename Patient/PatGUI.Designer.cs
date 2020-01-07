@@ -86,6 +86,7 @@
             // pgbProgress
             // 
             this.pgbProgress.Location = new System.Drawing.Point(12, 12);
+            this.pgbProgress.Maximum = 4200;
             this.pgbProgress.Name = "pgbProgress";
             this.pgbProgress.Size = new System.Drawing.Size(880, 23);
             this.pgbProgress.TabIndex = 5;
@@ -116,7 +117,7 @@
             this.Margin = new System.Windows.Forms.Padding(2);
             this.MaximizeBox = false;
             this.Name = "PatGUI";
-            this.Text = "Form1";
+            this.Text = "Avans-Astrand Client";
             this.ResumeLayout(false);
             this.PerformLayout();
 
