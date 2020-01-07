@@ -133,9 +133,9 @@ namespace Doctor
             this.curDoc = newDoc;
 
             if(curDoc == null)
-                Application.Exit();
+                System.Environment.Exit(-1);
 
-            lblUsername.Text = newDoc.username;
+            lblUsername.Text = "Username: " + curDoc.username;
             this.Visible = true;
         }
 
