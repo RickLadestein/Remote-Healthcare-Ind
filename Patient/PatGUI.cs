@@ -7,11 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Patient.Bike;
 using Patient.Communication;
 
 namespace Patient
 {
-    public partial class PatGUI : Form, ConnectionEventListener, ConnectionResponseListener
+    public partial class PatGUI : Form, ConnectionEventListener, ConnectionResponseListener, Bike.IBikeMeasurementListener
     {
         private Connection c;
         public PatGUI()
@@ -19,7 +20,11 @@ namespace Patient
             InitializeComponent();
             //StartConnection();
             lblCounter.Visible = false;
-            SetInstructionText(Instruction.WAIT_START);
+            //SetInstructionText(Instruction.WAIT_START);
+
+            sgRpm.To = 120;
+            sgPower.To = 400;
+            sgHeartRate.To = 200;
         }
 
         private void StartConnection()
@@ -52,6 +57,7 @@ namespace Patient
         {
             //DataRouter.GetInstance().SendMessage(c, Datapackages.Message_GetFilenames(new Guid(), "resources//data", "txt"), "file/getnames", this, true);
             SetInstructionText(Instruction.START_READING);
+            OnMeasurementReceived(new BikeMeasurement(136, 55, 85, 1, 275, 275, new TimeSpan(85)));
         }
 
         private void SetInstructionText(Instruction instruction)
@@ -91,6 +97,13 @@ namespace Patient
             //lblInstruction.Location = new System.Drawing.Point((this.Size.Width - lblInstruction.Size.Width) / 2, lblInstruction.Location.Y);
             this.BeginInvoke((Action)(() => lblInstruction.Location = new System.Drawing.Point((this.Size.Width - lblInstruction.Size.Width) / 2, lblInstruction.Location.Y)));
 
+        }
+
+        public void OnMeasurementReceived(BikeMeasurement measurement)
+        {
+            sgHeartRate.Value = measurement.Bpm;
+            sgPower.Value = measurement.Resistance;
+            sgRpm.Value = measurement.Rpm;
         }
     }
 }
