@@ -49,7 +49,8 @@ namespace Doctor
         {
             if(command == "user/edit")
             {
-                BeginInvoke((Action)(() => this.Close()));            }
+                BeginInvoke((Action)(() => this.Close()));            
+            }
         }
 
         public void onMessageResponseError(string command, string info)

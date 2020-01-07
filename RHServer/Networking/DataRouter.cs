@@ -107,6 +107,12 @@ namespace RHServer.Networking
                     case "user/msg":
                         SendMessage(c, inner_data);
                         break;
+                    case "user/edit":
+                        EditUser(c, inner_data);
+                        break;
+                    case "user/add":
+                        AddUser(c, inner_data);
+                        break;
                     case "patients/get_online":
                         GetActivePatients(c);
                         break;
@@ -282,6 +288,29 @@ namespace RHServer.Networking
                     doctors.Add(u);
             }
             this.SendDataToConnection(c, DataPackages.Response_Ack("doctors/get_online", "", doctors));
+        }
+
+        private void EditUser(Socket c, dynamic data)
+        {
+            JObject tmp = JObject.FromObject(data.data);
+            Patient p = tmp.ToObject<Patient>();
+
+            list_mutex.WaitOne();
+            for (int i = 0; i < users.Count; i++)
+                if (p.id == users[i].id)
+                {
+                    users.RemoveAt(i);
+                    i = users.Count;
+                }
+            p.active = true;
+            users.Add(p);
+            list_mutex.ReleaseMutex();
+            SendDataToConnection(c, DataPackages.Response_Ack("user/edit", "", null));
+        }
+
+        private void AddUser(Socket c, dynamic data)
+        {
+
         }
 
         private void SendDataToConnection(Socket c, String msg)

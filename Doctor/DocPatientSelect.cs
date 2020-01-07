@@ -50,10 +50,9 @@ namespace Doctor
 
         private void BtnEditPatient_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("WIP");
             Form ep = new DocEditPatientForm(this.curDoc, (Patient)this.cbxPatientSelect.SelectedItem, this.socket);
             ep.ShowDialog();
-            MessageBox.Show("Update Patient!");
+            PollData();
             // TODO: Update Patient
         }
 
