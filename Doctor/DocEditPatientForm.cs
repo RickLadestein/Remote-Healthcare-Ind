@@ -82,5 +82,20 @@ namespace Doctor
             if (result == DialogResult.Yes)
                 this.Close();
         }
+
+        private void inpWeight_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void inpHeight_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void inpBirth_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

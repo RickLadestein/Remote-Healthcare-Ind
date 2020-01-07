@@ -98,8 +98,8 @@ namespace RHServer.Networking
         public void Stop()
         {
             this.running = false;
-            this.tickTimer.Stop();
-            this.thread.Join();
+            this.connected = false;
+            DataRouter.getInstance().ForceLogout(this.id);
         }
 
         public Boolean GetConnected()
@@ -114,6 +114,7 @@ namespace RHServer.Networking
                 if (s.time_since_last_message >= s.MAX_MESSAGE_TIMEOUT)
                 {
                     s.running = false;
+                    DataRouter.getInstance().ForceLogout(this.id);
                 }
 
                 if (s.GetConnected())
@@ -182,6 +183,12 @@ namespace RHServer.Networking
         private void OnTimerTick(Object source, System.Timers.ElapsedEventArgs e)
         {
             this.time_since_last_message += 1;
+
+            if(!this.connected && !this.running)
+            {
+                this.tickTimer.Stop();
+                this.thread.Join();
+            }
         }
 
 

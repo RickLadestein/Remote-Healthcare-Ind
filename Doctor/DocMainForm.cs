@@ -27,8 +27,7 @@ namespace Doctor
             if (!BeginConnect())
             {
                 MessageBox.Show("Could not connect to server: Stopping application");
-                Application.Exit();
-                this.Close();
+                Environment.Exit(0);
             } else
             {
                 RunLoginProcedure();
@@ -45,6 +44,7 @@ namespace Doctor
 
         private void BtnAppExit_Click(object sender, EventArgs e)
         {
+            socket.Stop();
             Application.Exit();
         }
 
@@ -140,7 +140,11 @@ namespace Doctor
             }
 
             this.curDoc = newDoc;
-            lblUsername.Text = newDoc.username;
+
+            if(curDoc == null)
+                System.Environment.Exit(-1);
+
+            lblUsername.Text = "Username: " + curDoc.username;
             this.Visible = true;
         }
 

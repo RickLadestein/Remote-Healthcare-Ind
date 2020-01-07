@@ -78,6 +78,7 @@
             this.inpBirth.Name = "inpBirth";
             this.inpBirth.Size = new System.Drawing.Size(173, 20);
             this.inpBirth.TabIndex = 10;
+            this.inpBirth.ValueChanged += new System.EventHandler(this.inpBirth_ValueChanged);
             // 
             // lblBirth
             // 
@@ -131,6 +132,7 @@
             this.inpHeight.Name = "inpHeight";
             this.inpHeight.Size = new System.Drawing.Size(121, 20);
             this.inpHeight.TabIndex = 16;
+            this.inpHeight.TextChanged += new System.EventHandler(this.inpHeight_TextChanged);
             // 
             // inpWeight
             // 
@@ -138,6 +140,7 @@
             this.inpWeight.Name = "inpWeight";
             this.inpWeight.Size = new System.Drawing.Size(121, 20);
             this.inpWeight.TabIndex = 18;
+            this.inpWeight.TextChanged += new System.EventHandler(this.inpWeight_TextChanged);
             // 
             // label2
             // 

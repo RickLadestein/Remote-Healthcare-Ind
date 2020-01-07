@@ -43,9 +43,9 @@ namespace Doctor
 
         private void BtnNewPatient_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("WIP");
-            Form np = new DocNewPatientForm();
+            Form np = new DocNewPatientForm(this.socket, this.curDoc);
             np.ShowDialog();
+            PollData();
         }
 
         private void BtnEditPatient_Click(object sender, EventArgs e)

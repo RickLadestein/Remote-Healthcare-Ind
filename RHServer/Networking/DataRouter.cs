@@ -43,6 +43,20 @@ namespace RHServer.Networking
             IMAGES = 0x02
         }
 
+        public void ForceLogout(String id)
+        {
+            list_mutex.WaitOne();
+            foreach(User u in users)
+            {
+                if (u.id.ToString() == id && u.active)
+                {
+                    Console.WriteLine($"[Server]: forced {u.id} to inactive");
+                    u.active = false;
+                }
+            }
+            list_mutex.ReleaseMutex();
+        }
+
         private void ImportData()
         {
             list_mutex.WaitOne();
@@ -310,7 +324,14 @@ namespace RHServer.Networking
 
         private void AddUser(Socket c, dynamic data)
         {
+            JObject tmp = JObject.FromObject(data.data);
+            Patient p = tmp.ToObject<Patient>();
 
+            list_mutex.WaitOne();
+            users.Add(p);
+            p.active = true;
+            list_mutex.ReleaseMutex();
+            SendDataToConnection(c, DataPackages.Response_Ack("user/add", "", null));
         }
 
         private void SendDataToConnection(Socket c, String msg)
