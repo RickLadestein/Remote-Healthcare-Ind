@@ -70,7 +70,7 @@ namespace Patient
 
         private void button1_Click(object sender, EventArgs e)
         {
-            DataRouter.GetInstance().SendMessage(c, Datapackages.Message_Login("Rick", "123", Datapackages.USERTYPES.DOCTOR), "user/login", this, true);
+            DataRouter.GetInstance().SendMessage(c, Datapackages.Message_Login("Rick", "321", Datapackages.USERTYPES.DOCTOR), "user/login", this, true);
         }
 
         private void button2_Click(object sender, EventArgs e)

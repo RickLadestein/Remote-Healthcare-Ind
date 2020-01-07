@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Security.Cryptography;
-
+using Doctor.Profiles;
 namespace Doctor.Network
 {
     class Datapackages
@@ -22,7 +22,15 @@ namespace Doctor.Network
             USERS = 0x01,
             IMAGES = 0x02
         }
-        public static String message_Ack(string msg, Object data)
+
+        public static String Message_Alive()
+        {
+            return JsonConvert.SerializeObject(new
+            {
+                command = "ALIVE"
+            });
+        }
+        public static String Message_Ack(Guid id, string msg, Object data)
         {
             return JsonConvert.SerializeObject(new
             {
@@ -35,39 +43,42 @@ namespace Doctor.Network
             });
         }
 
-        public static String message_Error(string msg, Object data)
+        public static String Message_Error(Guid id, string msg, Object data)
         {
             return JsonConvert.SerializeObject(new
             {
                 msg = "ERROR",
                 data = new
                 {
+                    id = id,
                     info = msg,
                     data = data
                 }
             });
         }
 
-        public static String message_GetFilenames(string location, string format)
+        public static String Message_GetFilenames(Guid id, string location, string format)
         {
             return JsonConvert.SerializeObject(new
             {
                 command = "file/getnames",
                 data = new
                 {
+                    id = id,
                     location = location,
                     format = format
                 }
             });
         }
 
-        public static String message_CreateFile(string location, string filename, Object data)
+        public static String Message_CreateFile(Guid id, string location, string filename, Object data)
         {
             return JsonConvert.SerializeObject(new
             {
                 command = "file/create",
                 data = new
                 {
+                    id = id,
                     location = location,
                     file = filename,
                     data = data
@@ -75,33 +86,35 @@ namespace Doctor.Network
             });
         }
 
-        public static String message_DeleteFile(string location, string filename)
+        public static String Message_DeleteFile(Guid id, string location, string filename)
         {
             return JsonConvert.SerializeObject(new
             {
                 command = "file/delete",
                 data = new
                 {
+                    id = id,
                     location = location,
                     file = filename
                 }
             });
         }
 
-        public static String message_GetFile(string location, string filename)
+        public static String Message_GetFile(Guid id, string location, string filename)
         {
             return JsonConvert.SerializeObject(new
             {
                 command = "file/get",
                 data = new
                 {
+                    id = id,
                     location = location,
                     file = filename
                 }
             });
         }
 
-        public static String message_Login(string username, string password, USERTYPES type)
+        public static String Message_Login(string username, string password, USERTYPES type)
         {
             string output = "";
             if (type != USERTYPES.PATIENT)
@@ -122,43 +135,80 @@ namespace Doctor.Network
                     type = type,
                     hash = output
                 }
-            });
+            }); ;
         }
 
-        public static String message_Logout(String uid)
+        public static String Message_Logout(String id)
         {
             return JsonConvert.SerializeObject(new 
             { 
                 command = "user/logout",
                 data = new
                 {
-                    uid = uid
+                    id = id
                 }
             });
         }
 
-        public static String message_TrainingData(String doctor_uid, Object data)
+        public static String Message_TrainingData(Guid id, String doctor_uid, BikeMeasurement data)
         {
             return JsonConvert.SerializeObject(new
             {
                 command = "user/data",
-                data = data
+                data = new
+                {
+                    command = "user/data",
+                    id = id,
+                    target = doctor_uid,
+                    measurement = data
+                }
             });
         }
 
-        public static String message_Message(String patient_uid, String msg)
+        public static String Message_AddPatient(Guid id, Patient patient)
+        {
+            return JsonConvert.SerializeObject(new
+            {
+                command = "user/add",
+                data = new {
+                    command = "user/add",
+                    id = id,
+                    data = patient
+                }
+            });
+        }
+
+        public static String Message_EditPatient(Guid id, Patient newPatient)
+        {
+            return JsonConvert.SerializeObject(new
+            {
+                command = "user/edit",
+                data = new
+                {
+                    command = "user/edit",
+                    id = id,
+                    data = newPatient
+                }
+            });
+
+        }
+
+        public static String Message_Message(string id, String patient_uid, String msg)
         {
             return JsonConvert.SerializeObject(new
             {
                 command = "user/msg",
                 data = new
                 {
+                    command = "user/msg",
+                    id = id,
+                    target = patient_uid,
                     msg = msg
                 }
             });
         }
 
-        public static String message_GetPatientsUID()
+        public static String Message_GetPatientsUID()
         {
             return JsonConvert.SerializeObject(new
             {
@@ -167,7 +217,7 @@ namespace Doctor.Network
             });
         }
 
-        public static String message_GetDoctorsUID()
+        public static String Message_GetDoctorsUID()
         {
             return JsonConvert.SerializeObject(new
             {

@@ -27,7 +27,6 @@ namespace RHServer.Networking
         {
             list_mutex = new Mutex();
             users = new List<User>();
-
             ImportData();
         }
 
@@ -56,6 +55,7 @@ namespace RHServer.Networking
             input = FileManager.GetFileContents("patients.json", "resources\\users");
             data = JsonConvert.DeserializeObject(input);
             patients = ((JArray)data.users).ToObject<List<Patient>>();
+            patients[0].active = true;
 
             foreach (Patient p in patients)
                 users.Add(p);
@@ -108,8 +108,10 @@ namespace RHServer.Networking
                         SendMessage(c, inner_data);
                         break;
                     case "patients/get_online":
+                        GetActivePatients(c);
                         break;
                     case "doctors/get_online":
+                        GetActiveDoctors(c);
                         break;
                     case "ALIVE":
                         SendDataToConnection(c, DataPackages.Message_Alive());
@@ -141,7 +143,10 @@ namespace RHServer.Networking
                         u.active = true;
                         u.id = Guid.NewGuid();
                         c.id = u.id.ToString();
-                        SendDataToConnection(c, DataPackages.Response_Ack("user/login", u.id.ToString(), null));
+                        if(u is Doctor)
+                            SendDataToConnection(c, DataPackages.Response_Ack("user/login", u.id.ToString(), (Doctor) u));
+                        else
+                            SendDataToConnection(c, DataPackages.Response_Ack("user/login", u.id.ToString(), (Patient) u));
                         found = true;
                         break;
                     }
@@ -156,7 +161,7 @@ namespace RHServer.Networking
             list_mutex.WaitOne();
             bool found = false;
             foreach (User u in users)
-                if (u.hash == data.hash && !found)
+                if (u.id.ToString() == (string)data.id && !found)
                 {
                     if (!u.active)
                     {
@@ -222,7 +227,8 @@ namespace RHServer.Networking
         private void GetFileNames(Socket c, dynamic data)
         {
             String path = data.location;
-            List<String> files = FileManager.GetFileNames(path);
+            String format = data.format;
+            List<String> files = FileManager.GetFileNames(path, format);
             SendDataToConnection(c, DataPackages.Response_Ack("file/getnames", "", files));
         }
 
@@ -252,6 +258,30 @@ namespace RHServer.Networking
                 SendDataToConnection(t_connection, DataPackages.Message_Generic(command, data));
             else
                 SendDataToConnection(c, DataPackages.Response_Error(command, "Could not send data to target: Target does not exist"));
+        }
+
+        private void GetActivePatients(Socket c)
+        {
+            list_mutex.WaitOne();
+            List<User> patients = new List<User>();
+            foreach(User u in users)
+            {
+                if (u is Patient && u.active)
+                    patients.Add(u);
+            }
+            this.SendDataToConnection(c, DataPackages.Response_Ack("patients/get_online", "", patients));
+        }
+
+        private void GetActiveDoctors(Socket c)
+        {
+            list_mutex.WaitOne();
+            List<User> doctors = new List<User>();
+            foreach (User u in users)
+            {
+                if (u is Doctor && u.active)
+                    doctors.Add(u);
+            }
+            this.SendDataToConnection(c, DataPackages.Response_Ack("doctors/get_online", "", doctors));
         }
 
         private void SendDataToConnection(Socket c, String msg)

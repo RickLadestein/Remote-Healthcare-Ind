@@ -88,8 +88,9 @@ namespace RHServer.IO
             }
         }
 
-        public static List<String> GetFileNames(string folder)
+        public static List<String> GetFileNames(string folder, string format)
         {
+            //Files are stored (PATIENTHASH-date-month-year.json)
             List<String> output = new List<string>() ;
             String path = Directory.GetCurrentDirectory();
             path = Path.Combine(path, folder);
@@ -100,7 +101,12 @@ namespace RHServer.IO
                 String[] files = s.Split("\\");
                 output.Add(files[files.Length - 1]);
             }
-            return output;  
+
+            List<String> output2 = new List<string>();
+            foreach (String s in output)
+                if (s.Contains(format))
+                    output2.Add(s);
+            return output2;  
         }
     }
 }

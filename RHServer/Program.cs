@@ -5,6 +5,7 @@ using System.Text;
 using System.Collections.Generic;
 using RHServer.Networking;
 using RHServer.IO;
+using Newtonsoft.Json;
 
 namespace RHServer
 {
@@ -35,6 +36,8 @@ namespace RHServer
                     Console.WriteLine("Stopping server");
                     server.Stop();
                     Console.WriteLine("Server stopped");
+                    Thread.Sleep(1000);
+                    return;
                 }
             }
         }
