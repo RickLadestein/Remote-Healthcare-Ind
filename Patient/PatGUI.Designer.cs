@@ -75,10 +75,10 @@
             // lblInstruction
             // 
             this.lblInstruction.AutoSize = true;
-            this.lblInstruction.Font = new System.Drawing.Font("Microsoft Sans Serif", 25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblInstruction.Location = new System.Drawing.Point(357, 153);
+            this.lblInstruction.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblInstruction.Location = new System.Drawing.Point(385, 153);
             this.lblInstruction.Name = "lblInstruction";
-            this.lblInstruction.Size = new System.Drawing.Size(191, 39);
+            this.lblInstruction.Size = new System.Drawing.Size(134, 29);
             this.lblInstruction.TabIndex = 4;
             this.lblInstruction.Text = "Instructions";
             this.lblInstruction.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
@@ -93,10 +93,10 @@
             // lblCounter
             // 
             this.lblCounter.AutoSize = true;
-            this.lblCounter.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCounter.Location = new System.Drawing.Point(376, 38);
+            this.lblCounter.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblCounter.Location = new System.Drawing.Point(407, 38);
             this.lblCounter.Name = "lblCounter";
-            this.lblCounter.Size = new System.Drawing.Size(152, 31);
+            this.lblCounter.Size = new System.Drawing.Size(90, 20);
             this.lblCounter.TabIndex = 6;
             this.lblCounter.Text = "Countdown";
             // 
@@ -112,7 +112,9 @@
             this.Controls.Add(this.sgHeartRate);
             this.Controls.Add(this.sgRpm);
             this.Controls.Add(this.DummyButton);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Margin = new System.Windows.Forms.Padding(2);
+            this.MaximizeBox = false;
             this.Name = "PatGUI";
             this.Text = "Form1";
             this.ResumeLayout(false);

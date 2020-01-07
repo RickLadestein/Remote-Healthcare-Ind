@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Patient.Bike
 {
-    class BikeMeasurement
+    public class BikeMeasurement
     {
         public int Bpm { get; }
         public int Rpm { get; }

@@ -85,6 +85,9 @@
     <Compile Include="PatPatientSelect.Designer.cs">
       <DependentUpon>PatPatientSelect.cs</DependentUpon>
     </Compile>
+    <Compile Include="Profiles\doctor.cs" />
+    <Compile Include="Profiles\patient.cs" />
+    <Compile Include="Profiles\User.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="PatGUI.resx">
