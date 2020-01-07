@@ -53,7 +53,6 @@ namespace Patient
             this.cbxPatientSelect.Size = new System.Drawing.Size(281, 21);
             this.cbxPatientSelect.TabIndex = 0;
             this.cbxPatientSelect.SelectedIndexChanged += new System.EventHandler(this.cbxPatientSelect_SelectedIndexChanged);
-            this.cbxPatientSelect.TextChanged += new System.EventHandler(this.CbxPatientSelect_TextChanged);
             // 
             // btnSelectPatient
             // 
