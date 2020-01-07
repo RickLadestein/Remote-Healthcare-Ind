@@ -18,6 +18,7 @@ namespace Patient
         {
             InitializeComponent();
             //StartConnection();
+            lblCounter.Visible = false;
             SetInstructionText(Instruction.WAIT_START);
         }
 
@@ -58,8 +59,8 @@ namespace Patient
             switch(instruction)
             {
                 case Instruction.WAIT_START:
-                    //this.BeginInvoke((Action)(() => lblInstruction.Text = "Please wait for the doctor to start the test."));
-                    lblInstruction.Text = "Please wait for the doctor to start the test.";
+                    this.BeginInvoke((Action)(() => lblInstruction.Text = "Please wait for the doctor to start the test."));
+                    //lblInstruction.Text = "Please wait for the doctor to start the test.";
                     break;
                 case Instruction.WAIT_END:
                     this.BeginInvoke((Action)(() => lblInstruction.Text = "The test has been completed. Please wait for the doctor for further instructions."));
@@ -87,8 +88,8 @@ namespace Patient
                     break;
             }
 
-            lblInstruction.Location = new System.Drawing.Point((this.Size.Width - lblInstruction.Size.Width) / 2, lblInstruction.Location.Y);
-            //this.BeginInvoke((Action)(() => lblInstruction.Location = new System.Drawing.Point((this.Size.Width - lblInstruction.Size.Width) / 2, lblInstruction.Location.Y)));
+            //lblInstruction.Location = new System.Drawing.Point((this.Size.Width - lblInstruction.Size.Width) / 2, lblInstruction.Location.Y);
+            this.BeginInvoke((Action)(() => lblInstruction.Location = new System.Drawing.Point((this.Size.Width - lblInstruction.Size.Width) / 2, lblInstruction.Location.Y)));
 
         }
     }
