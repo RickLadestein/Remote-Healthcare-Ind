@@ -16,7 +16,19 @@ namespace Patient
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new PatGUI());
         }
+    }
+
+    public enum Instruction
+    {
+        WAIT_START,
+        WAIT_END,
+        START_WARMUP,
+        START_READING,
+        START_COOLDOWN,
+        PEDDLE_FASTER,
+        PEDDLE_SLOWER,
+        HEARTRATE_STEADY
     }
 }
