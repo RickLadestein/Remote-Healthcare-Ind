@@ -12,9 +12,15 @@ using Patient.Communication;
 
 namespace Patient
 {
-    public partial class PatGUI : Form, ConnectionEventListener, ConnectionResponseListener, Bike.IBikeMeasurementListener
+    public partial class PatGUI : Form, ConnectionResponseListener, Bike.IBikeMeasurementListener
     {
-        private Connection c;
+        private Socket s;
+        private BikeHandler bh;
+        private Patient curPat;
+        private List<BikeMeasurement> measurements;
+        private bool testRunning;
+        
+
         public PatGUI()
         {
             InitializeComponent();
@@ -25,19 +31,25 @@ namespace Patient
             sgRpm.To = 120;
             sgPower.To = 400;
             sgHeartRate.To = 200;
+
+            testRunning = true;
+
+            bh = BikeHandler.GetInstance();
+            bh.AddSubscriber(this);
+            bh.StartTimer();
         }
 
         private void StartConnection()
         {
-            c = new Connection("localhost", 25565, this);
+            s = new Socket("localhost", 25565);
         }
 
-        public void onConnectionError(Connection c, Exception e)
+        public void onConnectionError(Socket c, Exception e)
         {
             Console.WriteLine("[Patient]: " + e.Message);
         }
 
-        public void onDataReceived(Connection c, byte[] data, ushort length)
+        public void onDataReceived(Socket c, byte[] data, ushort length)
         {
             String message = Encoding.UTF8.GetString(data);
             DataRouter.GetInstance().OnMessageReceived(c, message);
@@ -57,7 +69,8 @@ namespace Patient
         {
             //DataRouter.GetInstance().SendMessage(c, Datapackages.Message_GetFilenames(new Guid(), "resources//data", "txt"), "file/getnames", this, true);
             SetInstructionText(Instruction.START_READING);
-            OnMeasurementReceived(new BikeMeasurement(136, 55, 85, 1, 275, 275, new TimeSpan(85)));
+
+            bh.StartTimer();
         }
 
         private void SetInstructionText(Instruction instruction)
@@ -81,10 +94,13 @@ namespace Patient
                     this.BeginInvoke((Action)(() => lblInstruction.Text = "The cooldown phase has begun."));
                     break;
                 case Instruction.PEDDLE_SLOWER:
-                    this.BeginInvoke((Action)(() => lblInstruction.Text = "Please slow down. \nPlease try to stay between 50 to 60 rotations per minute."));
+                    this.BeginInvoke((Action)(() => lblInstruction.Text = "Please slow down. \nStay between 50 to 60 rotations per minute."));
                     break;
                 case Instruction.PEDDLE_FASTER:
-                    this.BeginInvoke((Action)(() => lblInstruction.Text = "Please speed up. \nPlease try to stay between 50 to 60 rotations per minute."));
+                    this.BeginInvoke((Action)(() => lblInstruction.Text = "Please speed up. \nStay between 50 to 60 rotations per minute."));
+                    break;
+                case Instruction.PEDDLE_RIGHT:
+                    this.BeginInvoke((Action)(() => lblInstruction.Text = "Stay between 50 to 60 rotations per minute."));
                     break;
                 case Instruction.HEARTRATE_STEADY:
                     this.BeginInvoke((Action)(() => lblInstruction.Text = "A steady state has been reached. Please keep cycling."));
@@ -101,9 +117,29 @@ namespace Patient
 
         public void OnMeasurementReceived(BikeMeasurement measurement)
         {
-            sgHeartRate.Value = measurement.Bpm;
-            sgPower.Value = measurement.Resistance;
-            sgRpm.Value = measurement.Rpm;
+            this.BeginInvoke((Action)(() => sgHeartRate.Value = measurement.Bpm));
+            this.BeginInvoke((Action)(() => sgPower.Value = measurement.Resistance));
+            this.BeginInvoke((Action)(() => sgRpm.Value = measurement.Rpm));
+
+            if (measurement.Rpm > 63)
+                SetInstructionText(Instruction.PEDDLE_SLOWER);
+            else if (measurement.Rpm < 47)
+                SetInstructionText(Instruction.PEDDLE_FASTER);
+            else
+                SetInstructionText(Instruction.PEDDLE_RIGHT);
+
+
+            if(testRunning)
+            {
+                DataRouter.GetInstance().SendMessage(s, Datapackages.Message_TrainingData(curPat.id, "", measurement), "user/data", this, false);
+                measurements.Add(measurement);
+            }
+
+        }
+
+        public void onGenericMessageReceived(string command, dynamic data)
+        {
+            throw new NotImplementedException();
         }
     }
 }

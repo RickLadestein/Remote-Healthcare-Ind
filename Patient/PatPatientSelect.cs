@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Net.Sockets;
+//using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -71,6 +71,11 @@ namespace Patient
         }
 
         public void onMessageResponseError(string command, string info)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void onGenericMessageReceived(string command, dynamic data)
         {
             throw new NotImplementedException();
         }

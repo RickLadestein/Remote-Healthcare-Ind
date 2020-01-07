@@ -29,6 +29,7 @@ namespace Patient
         START_COOLDOWN,
         PEDDLE_FASTER,
         PEDDLE_SLOWER,
+        PEDDLE_RIGHT,
         HEARTRATE_STEADY
     }
 }
