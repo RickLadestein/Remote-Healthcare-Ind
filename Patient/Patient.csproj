@@ -72,6 +72,7 @@
     <Compile Include="Bike\IBikeMeasurementListener.cs" />
     <Compile Include="Communication\Datapackages.cs" />
     <Compile Include="Communication\DataRouter.cs" />
+    <Compile Include="Communication\Socket.cs" />
     <Compile Include="PatGUI.cs">
       <SubType>Form</SubType>
     </Compile>
