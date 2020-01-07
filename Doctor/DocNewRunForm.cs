@@ -12,16 +12,18 @@ using System.Threading;
 using LiveCharts;
 using LiveCharts.Defaults;
 using LiveCharts.Wpf;
+using Doctor.Network;
 
 namespace Doctor
 {
-    public partial class DocNewRunForm : Form
+    public partial class DocNewRunForm : Form, ConnectionResponseListener
     {
         Doctor curDoc;
         Patient curPat;
+        Socket socket;
         System.Timers.Timer progTimer;
 
-        public DocNewRunForm(Doctor doc, Patient pat)
+        public DocNewRunForm(Doctor doc, Patient pat, Socket soc)
         {
             InitializeComponent();
             lblTestStatus.Visible = false;
@@ -32,6 +34,9 @@ namespace Doctor
 
             curDoc = doc;
             curPat = pat;
+            this.socket = soc;
+
+            DataRouter.GetInstance().setGenericMessageListener(this);
 
             progTimer = new System.Timers.Timer(100);
             progTimer.AutoReset = true;
@@ -45,13 +50,12 @@ namespace Doctor
             lblClientInfo.Show();
             lblTestStatus.Show();
 
-            MessageBox.Show("Start test!");
-
             new Thread(new ThreadStart(StartTest)).Start();
         }
 
         private void StartTest()
         {
+            DataRouter.GetInstance().SendMessage(socket, Datapackages.Message_Message(curDoc.id.ToString(), curPat.id.ToString(), "START"), "user/msg", this, false);
             this.BeginInvoke((Action)(() =>
                 ccLiveChart.Series = new LiveCharts.SeriesCollection
                 {
@@ -71,7 +75,7 @@ namespace Doctor
                         Values = new ChartValues<double>{ }
                     }
                 }
-            )) ;
+            ));
 
             SetTestStatus("Running test...");
             progTimer.Start();
@@ -119,6 +123,23 @@ namespace Doctor
         {
             progTimer.Stop();
             this.Close();
+        }
+
+        public void onMessageResponse(string command, dynamic data)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void onMessageResponseError(string command, string info)
+        {
+            BeginInvoke((Action)(() => progTimer.Stop()));
+            BeginInvoke((Action)(() => MessageBox.Show("Stopping test: " + info)));
+            BeginInvoke((Action)(() => this.Close()));
+        }
+
+        public void onGenericMessageReceived(string command, dynamic data)
+        {
+            throw new NotImplementedException();
         }
     }
 }

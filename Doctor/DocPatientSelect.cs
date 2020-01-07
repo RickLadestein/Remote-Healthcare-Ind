@@ -23,6 +23,7 @@ namespace Doctor
         public DocPatientSelect()
         {
             InitializeComponent();
+            SelectedPatient = null;
             MessageBox.Show("Something went wrong. Please contact your system administrator!\nError code: ERR_NO_DOCNAME");
         }
         public DocPatientSelect(Socket s, Doctor doctor)

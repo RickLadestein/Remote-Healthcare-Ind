@@ -34,8 +34,6 @@
             this.lblPatGender = new System.Windows.Forms.Label();
             this.lblPatName = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.btnGearDown = new System.Windows.Forms.Button();
-            this.btnGearUp = new System.Windows.Forms.Button();
             this.lblValGear = new System.Windows.Forms.Label();
             this.lblValHeartbeat = new System.Windows.Forms.Label();
             this.lblValRpm = new System.Windows.Forms.Label();
@@ -112,8 +110,6 @@
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.groupBox2.Controls.Add(this.btnGearDown);
-            this.groupBox2.Controls.Add(this.btnGearUp);
             this.groupBox2.Controls.Add(this.lblValGear);
             this.groupBox2.Controls.Add(this.lblValHeartbeat);
             this.groupBox2.Controls.Add(this.lblValRpm);
@@ -123,26 +119,6 @@
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Live Values";
-            // 
-            // btnGearDown
-            // 
-            this.btnGearDown.Location = new System.Drawing.Point(117, 63);
-            this.btnGearDown.Name = "btnGearDown";
-            this.btnGearDown.Size = new System.Drawing.Size(23, 23);
-            this.btnGearDown.TabIndex = 4;
-            this.btnGearDown.Text = "🔽";
-            this.btnGearDown.UseVisualStyleBackColor = true;
-            this.btnGearDown.Click += new System.EventHandler(this.btnGearDown_Click);
-            // 
-            // btnGearUp
-            // 
-            this.btnGearUp.Location = new System.Drawing.Point(88, 63);
-            this.btnGearUp.Name = "btnGearUp";
-            this.btnGearUp.Size = new System.Drawing.Size(23, 23);
-            this.btnGearUp.TabIndex = 3;
-            this.btnGearUp.Text = "🔼";
-            this.btnGearUp.UseVisualStyleBackColor = true;
-            this.btnGearUp.Click += new System.EventHandler(this.btnGearUp_Click);
             // 
             // lblValGear
             // 
@@ -347,8 +323,6 @@
         private System.Windows.Forms.Button btnLogout;
         private System.Windows.Forms.Label lblUsername;
         private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.Button btnGearDown;
-        private System.Windows.Forms.Button btnGearUp;
         private System.Windows.Forms.ListBox lbxPrevTests;
         private LiveCharts.WinForms.CartesianChart chartSelectedRun;
         private System.Windows.Forms.GroupBox groupBox5;

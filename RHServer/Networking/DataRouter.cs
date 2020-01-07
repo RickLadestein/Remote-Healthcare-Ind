@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using RHServer.IO;
 using RHServer.Profiles;
 using System.Threading;
+using System.Security.Cryptography;
 
 namespace RHServer.Networking
 {
@@ -69,7 +70,6 @@ namespace RHServer.Networking
             input = FileManager.GetFileContents("patients.json", "resources\\users");
             data = JsonConvert.DeserializeObject(input);
             patients = ((JArray)data.users).ToObject<List<Patient>>();
-            patients[0].active = true;
 
             foreach (Patient p in patients)
                 users.Add(p);
@@ -117,6 +117,7 @@ namespace RHServer.Networking
                         Logout(c, inner_data);
                         break;
                     case "user/data":
+                        SendMessage(c, inner_data);
                         break;
                     case "user/msg":
                         SendMessage(c, inner_data);
@@ -317,6 +318,15 @@ namespace RHServer.Networking
                     i = users.Count;
                 }
             p.active = true;
+
+            string output = "";
+            using (MD5 md5Hash = MD5.Create())
+            {
+                byte[] bdata = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(p.birthday.ToString() + p.first_name + p.sur_name));
+                foreach (byte b in bdata)
+                    output += b.ToString("x2");
+            }
+            p.hash = output;
             users.Add(p);
             list_mutex.ReleaseMutex();
             SendDataToConnection(c, DataPackages.Response_Ack("user/edit", "", null));
@@ -328,6 +338,15 @@ namespace RHServer.Networking
             Patient p = tmp.ToObject<Patient>();
 
             list_mutex.WaitOne();
+            string output = "";
+            using (MD5 md5Hash = MD5.Create())
+            {
+                byte[] bdata = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(p.birthday.ToString() + p.first_name + p.sur_name));
+                foreach (byte b in bdata)
+                    output += b.ToString("x2");
+            }
+            p.hash = output;
+
             users.Add(p);
             p.active = true;
             list_mutex.ReleaseMutex();

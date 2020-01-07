@@ -32,14 +32,6 @@ namespace Doctor
             {
                 RunLoginProcedure();
             }
-            
-
-            // TODO
-            //curDoc = doctor;
-            //this.owner = owner;
-            ////curPat = patient;
-
-            //lblUsername.Text = "Username: " + curDoc.username;
         }
 
         private void BtnAppExit_Click(object sender, EventArgs e)
@@ -75,8 +67,8 @@ namespace Doctor
             using (DocPatientSelect showTest = new DocPatientSelect(socket, curDoc))
             {
                 showTest.ShowDialog();
-
-                SetPatient(showTest.GetSelectedPatient());
+                if(showTest.GetSelectedPatient() != null)
+                    SetPatient(showTest.GetSelectedPatient());
             }
         }
 
@@ -92,7 +84,7 @@ namespace Doctor
 
         private void btnNewRun_Click(object sender, EventArgs e)
         {
-            Form runForm = new DocNewRunForm(curDoc, curPat);
+            Form runForm = new DocNewRunForm(curDoc, curPat, socket);
             runForm.ShowDialog();
 
             // TODO: Add new run to the list
@@ -196,7 +188,6 @@ namespace Doctor
             {
                 string file = (string)data.data;
                 BeginInvoke((Action)(() => this.onDataFileReceived(file)));
-                //String file = (String) data.data;
             }
         }
 

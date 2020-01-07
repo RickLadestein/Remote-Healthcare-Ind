@@ -47,8 +47,12 @@ namespace RHServer.Networking
         {
             return JsonConvert.SerializeObject(new
             {
-                command = command,
-                data = data
+                command = "GENERIC",
+                data = new
+                {
+                    command = command,
+                    data = data
+                }
             });
         }
     }
