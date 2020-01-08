@@ -98,8 +98,9 @@ namespace Patient.Bike
         public void SetBikeSettings(int power, TimeSpan time)
         {
             SendCommand("RS", ""); // reset the bike
-            System.Threading.Thread.Sleep(1000);
+            System.Threading.Thread.Sleep(200);
             SendCommand("CM", ""); // enter command mode
+            //SendCommand("CD", ""); // enter countdownmode
             SendCommand("PW", $" {power}"); // set the power
             power = 50;
         }

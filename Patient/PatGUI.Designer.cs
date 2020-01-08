@@ -35,6 +35,9 @@
             this.lblInstruction = new System.Windows.Forms.Label();
             this.pgbProgress = new System.Windows.Forms.ProgressBar();
             this.lblCounter = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // DummyButton
@@ -86,7 +89,7 @@
             // pgbProgress
             // 
             this.pgbProgress.Location = new System.Drawing.Point(12, 12);
-            this.pgbProgress.Maximum = 4200;
+            this.pgbProgress.Maximum = 420;
             this.pgbProgress.Name = "pgbProgress";
             this.pgbProgress.Size = new System.Drawing.Size(880, 23);
             this.pgbProgress.TabIndex = 5;
@@ -101,11 +104,41 @@
             this.lblCounter.TabIndex = 6;
             this.lblCounter.Text = "Countdown";
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(123, 439);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(71, 13);
+            this.label1.TabIndex = 7;
+            this.label1.Text = "Speed (RPM)";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(408, 440);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(91, 13);
+            this.label2.TabIndex = 8;
+            this.label2.Text = "Heart Rate (BPM)";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(703, 440);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(92, 13);
+            this.label3.TabIndex = 9;
+            this.label3.Text = "Resistance (Watt)";
+            // 
             // PatGUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(904, 461);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.lblCounter);
             this.Controls.Add(this.pgbProgress);
             this.Controls.Add(this.lblInstruction);
@@ -133,6 +166,9 @@
         private System.Windows.Forms.Label lblInstruction;
         private System.Windows.Forms.ProgressBar pgbProgress;
         private System.Windows.Forms.Label lblCounter;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
     }
 }
 
