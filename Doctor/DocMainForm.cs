@@ -12,8 +12,8 @@ namespace Doctor
 {
     public partial class AstrandDoctorGUI : Form, ConnectionResponseListener
     {
-        Doctor curDoc;
-        Patient curPat;
+        private Doctor curDoc = null;
+        private Patient curPat = null;
 
         public readonly String hostname = "localhost";
         public readonly int port = 25565;
@@ -72,18 +72,12 @@ namespace Doctor
             }
         }
 
-        private void btnGearUp_Click(object sender, EventArgs e)
-        {
-            // TODO
-        } // TODO
-
-        private void btnGearDown_Click(object sender, EventArgs e)
-        {
-            // TODO
-        } // TODO
-
         private void btnNewRun_Click(object sender, EventArgs e)
         {
+            if (this.curPat == null) {
+                MessageBox.Show("Could not start test: no patient selected");
+                return;
+            }
             Form runForm = new DocNewRunForm(curDoc, curPat, socket);
             runForm.ShowDialog();
 

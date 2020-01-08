@@ -45,7 +45,6 @@ namespace Patient.Communication
             try
             {
                 ConnectTcp(host, port);
-                this.tickTimer.Start();
             }
             catch (Exception e)
             {
@@ -100,6 +99,7 @@ namespace Patient.Communication
             this.running = false;
             this.tickTimer.Stop();
             this.thread.Join();
+
         }
 
         public Boolean GetConnected()
@@ -173,15 +173,29 @@ namespace Patient.Communication
 
         private void ConnectTcp(String ip, int port)
         {
-            tcp_client = new TcpClient();
-            tcp_client.Connect(ip, port);
+            try
+            {
+                tcp_client = new TcpClient();
+                tcp_client.Connect(ip, port);
+
+            }
+            catch (Exception ex)
+            {
+                if (this.onSocketError != null)
+                    this.onSocketError.Invoke(this, ex.Message);
+                this.connected = false;
+                return;
+            }
             this.stream = tcp_client.GetStream();
             this.ip_endpoint = this.tcp_client.Client.RemoteEndPoint.ToString();
+            this.tickTimer.Start();
         }
 
         private void OnTimerTick(Object source, System.Timers.ElapsedEventArgs e)
         {
             this.time_since_last_message += 1;
+            if (!this.running)
+                this.Stop();
         }
 
 

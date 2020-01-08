@@ -44,10 +44,6 @@ namespace Patient
             // 
             this.cbxPatientSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbxPatientSelect.FormattingEnabled = true;
-            this.cbxPatientSelect.Items.AddRange(new object[] {
-            "asdf1",
-            "asdf2",
-            "adsf"});
             this.cbxPatientSelect.Location = new System.Drawing.Point(12, 12);
             this.cbxPatientSelect.Name = "cbxPatientSelect";
             this.cbxPatientSelect.Size = new System.Drawing.Size(281, 21);

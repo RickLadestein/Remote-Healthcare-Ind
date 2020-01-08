@@ -134,6 +134,9 @@ namespace RHServer.Networking
                     case "doctors/get_online":
                         GetActiveDoctors(c);
                         break;
+                    case "patient/get_all":
+                        GetAllPatients(c);
+                        break;
                     case "ALIVE":
                         SendDataToConnection(c, DataPackages.Message_Alive());
                         break;
@@ -291,6 +294,7 @@ namespace RHServer.Networking
                     patients.Add(u);
             }
             this.SendDataToConnection(c, DataPackages.Response_Ack("patients/get_online", "", patients));
+            list_mutex.ReleaseMutex();
         }
 
         private void GetActiveDoctors(Socket c)
@@ -303,6 +307,7 @@ namespace RHServer.Networking
                     doctors.Add(u);
             }
             this.SendDataToConnection(c, DataPackages.Response_Ack("doctors/get_online", "", doctors));
+            list_mutex.ReleaseMutex();
         }
 
         private void EditUser(Socket c, dynamic data)
@@ -348,11 +353,20 @@ namespace RHServer.Networking
             p.hash = output;
 
             users.Add(p);
-            p.active = true;
             list_mutex.ReleaseMutex();
             SendDataToConnection(c, DataPackages.Response_Ack("user/add", "", null));
         }
 
+        private void GetAllPatients(Socket c)
+        {
+            List<Patient> output = new List<Patient>();
+            list_mutex.WaitOne();
+            foreach (User u in users)
+                if (u is Patient)
+                    output.Add((Patient)u);
+            this.SendDataToConnection(c, DataPackages.Response_Ack("patient/get_all", "", output));
+            list_mutex.ReleaseMutex();
+        }
         private void SendDataToConnection(Socket c, String msg)
         {
             byte[] output = Encoding.UTF8.GetBytes(msg);

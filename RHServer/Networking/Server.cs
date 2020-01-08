@@ -81,7 +81,9 @@ namespace RHServer.Networking
             Socket s = new Socket(c);
             s.onMessageReceived += DataRouter.getInstance().OnMessageReceived;
             s.onSocketError += OnSocketError;
+            mutex.WaitOne();
             connections.Add(s);
+            mutex.ReleaseMutex();
             s.Start();
             Console.WriteLine($"[Server]: A Client connected [{c.Client.RemoteEndPoint.ToString()}]");
         }

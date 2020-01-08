@@ -6,7 +6,6 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-//using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -18,15 +17,18 @@ namespace Patient
         private Socket socket;
         private Patient SelectedPatient { get; set; }
 
-        public PatPatientSelect()
+        public PatPatientSelect(Socket s)
         {
             InitializeComponent();
+            this.socket = s;
+            this.SelectedPatient = null;
+            PollData();
         }
 
 
         private void PollData()
         {
-            DataRouter.GetInstance().SendMessage(socket, Datapackages.Message_GetPatientsUID(), "patients/get_all", this, true);
+            DataRouter.GetInstance().SendMessage(socket, Datapackages.Message_GetAllPatients(), "patient/get_all", this, true);
         }
 
         private void PatPatientSelect_FormClosed(object sender, FormClosedEventArgs e)
@@ -38,12 +40,18 @@ namespace Patient
         {
             if (cbxPatientSelect.SelectedIndex >= 0)
             {
-                this.Close();
+                this.SelectedPatient = (Patient)cbxPatientSelect.SelectedItem;
+                DataRouter.GetInstance().SendMessage(this.socket, Datapackages.Message_Login(this.SelectedPatient.hash), "user/login", this, true);
             }
             else
             {
                 MessageBox.Show("Please select a patient");
             }
+        }
+
+        public Patient GetPatient()
+        {
+            return this.SelectedPatient;
         }
 
         private void cbxPatientSelect_SelectedIndexChanged(object sender, EventArgs e)
@@ -59,14 +67,18 @@ namespace Patient
 
         public void onMessageResponse(string command, dynamic data)
         {
-            if(command == "patients/get_all")
+            if(command == "patient/get_all")
             {
                 List<Patient> users = ((JArray)data.data).ToObject<List<Patient>>();
-                cbxPatientSelect.Items.Clear();
+                BeginInvoke((Action)(() => cbxPatientSelect.Items.Clear()));
                 foreach (Patient p in users)
                 {
-                    cbxPatientSelect.Items.Add(p);
+                    BeginInvoke((Action)(() => cbxPatientSelect.Items.Add(p)));
                 }
+            } else if(command == "user/login")
+            {
+                this.SelectedPatient.id = new Guid((String)data.info);
+                BeginInvoke((Action)(() => this.Close()));
             }
         }
 

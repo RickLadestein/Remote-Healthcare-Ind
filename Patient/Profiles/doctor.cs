@@ -7,15 +7,12 @@ namespace Patient
     public class Doctor : User
     {
         public string username;
-        public string hash;
         public Boolean active;
 
-        public Doctor(string username, string hash)
+        public Doctor(string username, Guid id)
         {
             this.username = username;
-            this.hash = hash;
-            this.active = false;
-            this.id = Guid.NewGuid();
+            this.id = id;
         }
     }
 }

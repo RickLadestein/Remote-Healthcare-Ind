@@ -8,20 +8,24 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Timers;
-using System.Threading;
 using LiveCharts;
 using LiveCharts.Defaults;
 using LiveCharts.Wpf;
 using Doctor.Network;
+using Doctor.Profiles;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using System.Timers;
 
 namespace Doctor
 {
     public partial class DocNewRunForm : Form, ConnectionResponseListener
     {
-        Doctor curDoc;
-        Patient curPat;
-        Socket socket;
-        System.Timers.Timer progTimer;
+        private Doctor curDoc;
+        private Patient curPat;
+        private Socket socket;
+        private bool ready = false;
+        private System.Timers.Timer timer;
 
         public DocNewRunForm(Doctor doc, Patient pat, Socket soc)
         {
@@ -36,12 +40,25 @@ namespace Doctor
             curPat = pat;
             this.socket = soc;
 
+            DataRouter.GetInstance().SendMessage(this.socket,
+                Datapackages.Message_Message(this.curDoc.id.ToString(), this.curPat.id.ToString(), "FIRST MESSAGE"),
+                "user/msg", this, false);
+
+            this.SpeedGuage.To = 200;
+            this.HeartGuage.To = 200;
+            this.ResistanceGuage.To = 200;
+
+            this.SpeedGuage.FromColor = System.Windows.Media.Color.FromRgb(0, 0, 0b11111111);
+            this.HeartGuage.FromColor = System.Windows.Media.Color.FromRgb(0, 0, 0b11111111);
+            this.ResistanceGuage.FromColor = System.Windows.Media.Color.FromRgb(0, 0, 0b11111111);
+
+            this.SpeedGuage.ToColor = System.Windows.Media.Color.FromRgb(0b11111111, 0, 0);
+            this.HeartGuage.ToColor = System.Windows.Media.Color.FromRgb(0b11111111, 0, 0);
+            this.ResistanceGuage.ToColor = System.Windows.Media.Color.FromRgb(0b11111111, 0, 0);
+
+
+            timer = new System.Timers.Timer(1000);
             DataRouter.GetInstance().setGenericMessageListener(this);
-
-            progTimer = new System.Timers.Timer(100);
-            progTimer.AutoReset = true;
-            progTimer.Elapsed += new ElapsedEventHandler(OnTimerTick);
-
         }
 
         private void btnStart_Click(object sender, EventArgs e)
@@ -50,7 +67,6 @@ namespace Doctor
             lblClientInfo.Show();
             lblTestStatus.Show();
 
-            new Thread(new ThreadStart(StartTest)).Start();
         }
 
         private void StartTest()
@@ -76,36 +92,22 @@ namespace Doctor
                     }
                 }
             ));
-
+            ready = true;
             SetTestStatus("Running test...");
-            progTimer.Start();
-        }
-        private void OnTimerTick(object sender, ElapsedEventArgs e)
-        {
-            if (!IncrementTimer())
-            {
-                progTimer.Stop();
-                SetTestStatus("Test completed.");
-                this.BeginInvoke((Action)(() => btnFinish.Visible = true));
-            }
         }
 
-        private bool IncrementTimer() 
+        private void AddMeasurementToChart(BikeMeasurement m)
         {
-            if (pgbRunning.Value < pgbRunning.Maximum)
-                this.BeginInvoke((Action)(() => pgbRunning.Increment(1)));
-            else
-                return false;
-
-            if(pgbRunning.Value % 10 == 0 )
+            if (ready)
             {
-                ccLiveChart.Series[0].Values.Add((double)(pgbRunning.Value + 25));
-                ccLiveChart.Series[1].Values.Add((double)(pgbRunning.Value + 55));
-                ccLiveChart.Series[2].Values.Add((double)(pgbRunning.Value + 95));
+                this.ccLiveChart.Series[0].Values.Add((double)m.Bpm);
+                this.ccLiveChart.Series[1].Values.Add((double)m.Rpm);
+                this.ccLiveChart.Series[2].Values.Add((double)m.Resistance);
+
+                this.ResistanceGuage.Value = m.Resistance;
+                this.HeartGuage.Value = m.Bpm;
+                this.SpeedGuage.Value = m.Rpm;
             }
-
-            return true;
-
         }
 
         private void SetTestStatus(string status)
@@ -121,7 +123,6 @@ namespace Doctor
 
         private void btnFinish_Click(object sender, EventArgs e)
         {
-            progTimer.Stop();
             this.Close();
         }
 
@@ -132,14 +133,21 @@ namespace Doctor
 
         public void onMessageResponseError(string command, string info)
         {
-            BeginInvoke((Action)(() => progTimer.Stop()));
             BeginInvoke((Action)(() => MessageBox.Show("Stopping test: " + info)));
             BeginInvoke((Action)(() => this.Close()));
         }
 
         public void onGenericMessageReceived(string command, dynamic data)
         {
-            throw new NotImplementedException();
+            dynamic message = data.data.data;
+            JObject obj = JObject.FromObject(message.measurement);
+            BikeMeasurement measurement = obj.ToObject<BikeMeasurement>();
+            BeginInvoke((Action)(() => AddMeasurementToChart(measurement)));
+        }
+
+        private void DocNewRunForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            DataRouter.GetInstance().setGenericMessageListener(null);
         }
     }
 }

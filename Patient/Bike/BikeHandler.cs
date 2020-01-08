@@ -25,7 +25,7 @@ namespace Patient.Bike
         private string currentmessage;
 
         public bool alive;
-        private int power = 25;
+        private int power = 50;
 
         private List<IBikeMeasurementListener> subscribers;
         #endregion
@@ -60,7 +60,7 @@ namespace Patient.Bike
                 //Environment.Exit(-1);
             }
             InitiateTimer();
-            SendCommand("RS", "");
+            SetBikeSettings(50, new TimeSpan());
         }
 
         private string getComport()
@@ -98,11 +98,10 @@ namespace Patient.Bike
         public void SetBikeSettings(int power, TimeSpan time)
         {
             SendCommand("RS", ""); // reset the bike
+            System.Threading.Thread.Sleep(1000);
             SendCommand("CM", ""); // enter command mode
-            SendCommand("CD", ""); // enter countdownmode
             SendCommand("PW", $" {power}"); // set the power
-            SendCommand("PT", $" {(time.Minutes * 60) + time.Seconds}"); // set the time
-            power = 25;
+            power = 50;
         }
 
         public void StartTimer()
@@ -155,6 +154,7 @@ namespace Patient.Bike
             Console.WriteLine("Closing connection to bike");
             try
             {
+                this.alive = false;
                 poller.Stop();
                 port.Close();
             }

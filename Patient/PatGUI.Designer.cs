@@ -118,6 +118,7 @@
             this.MaximizeBox = false;
             this.Name = "PatGUI";
             this.Text = "Avans-Astrand Client";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PatGUI_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 

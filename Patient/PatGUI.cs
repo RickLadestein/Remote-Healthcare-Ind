@@ -9,22 +9,34 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Patient.Bike;
 using Patient.Communication;
+using System.Threading;
 
 namespace Patient
 {
     public partial class PatGUI : Form, ConnectionResponseListener, Bike.IBikeMeasurementListener
     {
-        private Socket s;
+        private readonly String hostname = "localhost";
+        private readonly int port = 25565;
+
+        private Socket socket;
         private BikeHandler bh;
         private Patient curPat;
         private List<BikeMeasurement> measurements;
         private bool testRunning;
+
+        private String bound_doc = "";
         
 
         public PatGUI()
         {
             InitializeComponent();
-            //StartConnection();
+            if(!BeginConnect())
+            {
+                MessageBox.Show("Could not connect to server: Stopping application");
+                Environment.Exit(0);
+            }
+            StartLogin();
+
             lblCounter.Visible = false;
             //SetInstructionText(Instruction.WAIT_START);
 
@@ -39,31 +51,41 @@ namespace Patient
             bh.StartTimer();
         }
 
-        private void StartConnection()
+        private void StartLogin()
         {
-            s = new Socket("localhost", 25565);
+            PatPatientSelect patientselect = new PatPatientSelect(socket);
+            patientselect.ShowDialog();
+            this.curPat = patientselect.GetPatient();
+
+            if(this.curPat == null)
+            {
+                Environment.Exit(0);
+            }
+            DataRouter.GetInstance().setGenericMessageListener(this);
         }
 
-        public void onConnectionError(Socket c, Exception e)
+        private bool BeginConnect()
         {
-            Console.WriteLine("[Patient]: " + e.Message);
+            int tries = 0;
+            socket = new Socket(hostname, port);
+            socket.onMessageReceived = DataRouter.GetInstance().OnMessageReceivedDelegate;
+            socket.onSocketError = onConnectionError;
+
+            while (!socket.GetConnected())
+            {
+                Thread.Sleep(1000);
+                tries += 1;
+
+                if (tries == 10)
+                {
+                    return false;
+                }
+            }
+            socket.Start();
+            return true;
         }
 
-        public void onDataReceived(Socket c, byte[] data, ushort length)
-        {
-            String message = Encoding.UTF8.GetString(data);
-            DataRouter.GetInstance().OnMessageReceived(c, message);
-        }
-
-        public void onMessageResponse(string command, object data)
-        {
-            Console.WriteLine(data);
-        }
-
-        public void onMessageResponseError(string command, string info)
-        {
-            throw new NotImplementedException();
-        }
+        
 
         private void DummyButton_Click(object sender, EventArgs e)
         {
@@ -128,18 +150,50 @@ namespace Patient
             else
                 SetInstructionText(Instruction.PEDDLE_RIGHT);
 
+            if (bound_doc != "")
+            {
+                DataRouter.GetInstance().SendMessage(
+                    this.socket,
+                    Datapackages.Message_TrainingData(this.curPat.id, this.bound_doc, measurement),
+                    "user/data",
+                    this,
+                    false);
+            }
+
 
             if(testRunning)
             {
-                DataRouter.GetInstance().SendMessage(s, Datapackages.Message_TrainingData(curPat.id, "", measurement), "user/data", this, false);
-                measurements.Add(measurement);
+                //measurements.Add(measurement);
             }
 
         }
 
+        #region Callbacks
+        public void onConnectionError(Socket c, String e)
+        {
+            Console.WriteLine("[Patient]: " + e);
+        }
+
+        public void onMessageResponse(string command, object data)
+        {
+        }
+
+        public void onMessageResponseError(string command, string info)
+        {
+            Console.WriteLine("Hi something went wrong here");
+        }
+
         public void onGenericMessageReceived(string command, dynamic data)
         {
-            throw new NotImplementedException();
+            dynamic message = data.data.data;
+            this.bound_doc = (string) message.id;        
+        }
+        #endregion
+
+        private void PatGUI_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            BikeHandler.GetInstance().ClosePort();
+            this.socket.Stop();
         }
     }
 }

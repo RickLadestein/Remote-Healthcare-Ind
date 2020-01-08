@@ -74,6 +74,10 @@ namespace Patient.Communication
                 
             }
         }
+        public void OnMessageReceivedDelegate(Socket handle, byte[] data, int length)
+        {
+            OnMessageReceived(handle, Encoding.UTF8.GetString(data));
+        }
 
         public void setGenericMessageListener(ConnectionResponseListener l)
         {

@@ -7,5 +7,6 @@ namespace Patient
     public abstract class User
     {
         public Guid id;
+        public String hash;
     }
 }

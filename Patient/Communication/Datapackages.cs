@@ -114,26 +114,14 @@ namespace Patient.Communication
             });
         }
 
-        public static String Message_Login(string username, string password, USERTYPES type)
+        public static String Message_Login(string hash)
         {
-            string output = "";
-            if (type != USERTYPES.PATIENT)
-            {
-                using (MD5 md5Hash = MD5.Create())
-                {
-                    byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(username + password));
-                    foreach (byte b in data)
-                        output += b.ToString("x2");
-                }
-            }
-
             return JsonConvert.SerializeObject(new
             {
                 command = "user/login",
                 data = new
                 {
-                    type = type,
-                    hash = output
+                    hash = hash
                 }
             }); ;
         }
@@ -185,6 +173,15 @@ namespace Patient.Communication
             return JsonConvert.SerializeObject(new
             {
                 command = "patients/get_online",
+                data = new { }
+            });
+        }
+
+        public static String Message_GetAllPatients()
+        {
+            return JsonConvert.SerializeObject(new
+            {
+                command = "patient/get_all",
                 data = new { }
             });
         }
