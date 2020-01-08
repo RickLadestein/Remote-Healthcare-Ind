@@ -183,7 +183,7 @@ namespace Patient
             this.BeginInvoke((Action)(() => sgPower.Value = measurement.Resistance));
             this.BeginInvoke((Action)(() => sgRpm.Value = measurement.Rpm));
 
-            if(textChangeCooldown < 1)
+            if(textChangeCooldown < 1 && testRunning)
                 if (measurement.Rpm > 63)
                     SetInstructionText(Instruction.PEDDLE_SLOWER);
                 else if (measurement.Rpm < 47)
@@ -257,7 +257,7 @@ namespace Patient
             //BikeHandler.GetInstance().
             //BikeHandler.GetInstance().SetPower(75);
 
-            this.elapsedSeconds = 100;
+            //this.elapsedSeconds = 100;
             timer.Start();
             
         }
@@ -368,7 +368,6 @@ namespace Patient
             if(elapsedSeconds > 360)
             {
                 Debug.WriteLine("In Cooldown: " + elapsedSeconds);
-                this.elapsedSeconds = 420;
                 if (newestMeasurement.Resistance != 75)
                     BikeHandler.GetInstance().SetPower(75);
             }

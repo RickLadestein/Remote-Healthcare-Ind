@@ -341,6 +341,7 @@ namespace RHServer.Networking
             }
             p.hash = output;
             users.Add(p);
+            SaveUsers();
             list_mutex.ReleaseMutex();
             SendDataToConnection(c, DataPackages.Response_Ack("user/edit", "", null));
         }
@@ -359,8 +360,8 @@ namespace RHServer.Networking
                     output += b.ToString("x2");
             }
             p.hash = output;
-
             users.Add(p);
+            SaveUsers();
             list_mutex.ReleaseMutex();
             SendDataToConnection(c, DataPackages.Response_Ack("user/add", "", null));
         }
@@ -381,6 +382,24 @@ namespace RHServer.Networking
             ushort length = (ushort)msg.Length;
             c.SendMessage(output);
             Logger.LogSendMessage(msg);
+        }
+
+        private void SaveUsers()
+        {
+            List<Patient> patients = new List<Patient>();
+            List<Doctor> doctors = new List<Doctor>();
+            foreach (User u in users)
+                if (u is Patient)
+                    patients.Add((Patient)u);
+                else
+                    doctors.Add((Doctor)u);
+
+            FileManager.DeleteFile("patients.json", "resources\\users");
+            FileManager.DeleteFile("doctors.json", "resources\\user");
+
+            FileManager.WriteFileContents("patients.json", "resources\\users", JsonConvert.SerializeObject(new { users = patients }));
+            FileManager.WriteFileContents("doctors.json", "resources\\users", JsonConvert.SerializeObject(new { users = doctors }));
+
         }
     }
 }

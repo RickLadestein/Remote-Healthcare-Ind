@@ -124,9 +124,9 @@
             this.lblHeight.AutoSize = true;
             this.lblHeight.Location = new System.Drawing.Point(12, 98);
             this.lblHeight.Name = "lblHeight";
-            this.lblHeight.Size = new System.Drawing.Size(38, 13);
+            this.lblHeight.Size = new System.Drawing.Size(61, 13);
             this.lblHeight.TabIndex = 8;
-            this.lblHeight.Text = "Height";
+            this.lblHeight.Text = "Height (cm)";
             // 
             // inpWeight
             // 
@@ -140,9 +140,9 @@
             this.lblWeight.AutoSize = true;
             this.lblWeight.Location = new System.Drawing.Point(12, 127);
             this.lblWeight.Name = "lblWeight";
-            this.lblWeight.Size = new System.Drawing.Size(41, 13);
+            this.lblWeight.Size = new System.Drawing.Size(62, 13);
             this.lblWeight.TabIndex = 10;
-            this.lblWeight.Text = "Weight";
+            this.lblWeight.Text = "Weight (kg)";
             // 
             // DocNewPatientForm
             // 
