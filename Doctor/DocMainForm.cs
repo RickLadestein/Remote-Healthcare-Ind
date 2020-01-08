@@ -7,6 +7,7 @@ using Doctor.Network;
 using System.Threading;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using Doctor.Profiles;
 
 namespace Doctor
 {
@@ -18,12 +19,15 @@ namespace Doctor
         public readonly String hostname = "localhost";
         public readonly int port = 25565;
 
+        private List<BikeMeasurement> c_m;
+
         private Socket socket;
 
         public AstrandDoctorGUI()
         {
             this.Visible = false;
             InitializeComponent();
+            c_m = new List<BikeMeasurement>();
             if (!BeginConnect())
             {
                 MessageBox.Show("Could not connect to server: Stopping application");
@@ -31,6 +35,25 @@ namespace Doctor
             } else
             {
                 RunLoginProcedure();
+
+                this.chartSelectedRun.Series = new LiveCharts.SeriesCollection
+                {
+                    new LineSeries
+                    {
+                        Title = "Heartrate",
+                        Values = new ChartValues<double>{ }
+                    },
+                    new LineSeries
+                    {
+                        Title = "RPM",
+                        Values = new ChartValues<double>{ }
+                    },
+                    new LineSeries
+                    {
+                        Title = "Power",
+                        Values = new ChartValues<double>{ }
+                    }
+                };
             }
         }
 
@@ -52,12 +75,58 @@ namespace Doctor
                 "file/get", this, true);
         }
 
-        private void onDataFileReceived(String contents)
+        private void onDataFileReceived(List<BikeMeasurement> contents)
         {
+            this.chartSelectedRun.Series[0].Values.Clear();
+            this.chartSelectedRun.Series[1].Values.Clear();
+            this.chartSelectedRun.Series[2].Values.Clear();
+            c_m.Clear();
+            c_m.AddRange(contents);
 
+            CalculateData();
+            foreach (BikeMeasurement b in contents)
+            {
+                this.chartSelectedRun.Series[0].Values.Add((double)b.Bpm);
+                this.chartSelectedRun.Series[1].Values.Add((double)b.Rpm);
+                this.chartSelectedRun.Series[2].Values.Add((double)b.Resistance);
+            }
         }
 
-        private void btnLogout_Click(object sender, EventArgs e)
+        private void CalculateData()
+        {
+            double avg_hr = 0.0;
+            double avg_rs = 0.0;
+            double avg_rpm = 0.0;
+            foreach (BikeMeasurement b in c_m)
+            {
+                avg_hr += b.Bpm;
+                avg_rs += b.Rpm;
+                avg_rpm += b.Rpm;
+            }
+
+            avg_hr /= c_m.Count;
+            avg_rs /= c_m.Count;
+            avg_rpm /= c_m.Count;
+
+            this.label1.Text = $"VO2max: {CalculateVO2(this.curPat, avg_hr)} ml/kg/min";
+            this.label2.Text = $"Average Heartrate: {avg_hr} bpm";
+            this.label3.Text = $"Average Rpm: {avg_rpm} rom";
+            this.label4.Text = $"Steady State Reached: " + (c_m.Count > 9 ? "No" : "Yes");
+        }
+
+        private double CalculateVO2(Patient p, double hr)
+        {
+            double time = c_m.Count > 8 ? 4 : 2;
+            if (!p.gender)
+            {
+                return (100.5 - (0.1636 * p.weight) - (1.438 * time) - (0.1928 * hr));
+            } else
+            {
+                return (108.844 - (0.1636 * p.weight) - (1.438 * time) - (0.1928 * hr));
+            }
+        }
+
+            private void btnLogout_Click(object sender, EventArgs e)
         {
             DataRouter.GetInstance().SendMessage(this.socket, Datapackages.Message_Logout(curDoc.id.ToString()), "user/logout", this, true);
         }
@@ -81,6 +150,8 @@ namespace Doctor
             Form runForm = new DocNewRunForm(curDoc, curPat, socket);
             runForm.ShowDialog();
 
+            DataRouter.GetInstance().setGenericMessageListener(this);
+            DataRouter.GetInstance().SendMessage(this.socket, Datapackages.Message_GetFilenames(this.curDoc.id, "resources\\data", this.curPat.hash), "file/getnames", this, true);
             // TODO: Add new run to the list
 
             lbxPrevTests.SelectedIndex = 0;
@@ -180,8 +251,9 @@ namespace Doctor
                     BeginInvoke((Action)(() => lbxPrevTests.Items.Add(s.Substring(33, (s.Length - 33)))));
             } else if(command == "file/get")
             {
-                string file = (string)data.data;
-                BeginInvoke((Action)(() => this.onDataFileReceived(file)));
+                String measurement = (String)data.data;
+                List<BikeMeasurement> ms = ((JArray)Newtonsoft.Json.JsonConvert.DeserializeObject(measurement)).ToObject<List<BikeMeasurement>>();
+                BeginInvoke((Action)(() => this.onDataFileReceived(ms)));
             }
         }
 
@@ -192,7 +264,7 @@ namespace Doctor
 
         public void onGenericMessageReceived(string command, dynamic data)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

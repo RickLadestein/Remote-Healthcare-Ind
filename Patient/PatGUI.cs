@@ -75,6 +75,7 @@ namespace Patient
             bh.AddSubscriber(this);
             bh.StartTimer();
 
+
         }
 
         private void StartLogin()
@@ -134,7 +135,7 @@ namespace Patient
             switch(instruction)
             {
                 case Instruction.WAIT_START:
-                    newMessage = "Please wait for the doctor to start the test.";
+                    newMessage = "Please wait for the doctor to start the test.\nThe test consists of 3 parts: \n2 minutes of warming up, 2-4 minutes of testing and 1 minute cooling down.";
                     //lblInstruction.Text = "Please wait for the doctor to start the test.";
                     break;
                 case Instruction.WAIT_END:
@@ -252,14 +253,11 @@ namespace Patient
             steadyStateHeartrates = new int[5];
             testRunning = true;
 
-            BikeHandler.GetInstance().SetBikeSettings(50, new TimeSpan(0, 7, 0));
+            BikeHandler.GetInstance().SetBikeSettings(125, new TimeSpan(0, 7, 0));
             //BikeHandler.GetInstance().
             //BikeHandler.GetInstance().SetPower(75);
 
-#if DEBUG
-            elapsedSeconds = 100;
-#endif
-
+            this.elapsedSeconds = 100;
             timer.Start();
             
         }
@@ -274,6 +272,15 @@ namespace Patient
             testRunning = false;
             SetInstructionText(Instruction.WAIT_END);
             this.BeginInvoke((Action)(() => lblCounter.Visible = false));
+            this.bound_doc = "";
+            SaveData();
+        }
+
+        private void SaveData()
+        {
+            DateTime now = DateTime.Now;
+            DataRouter.GetInstance().SendMessage(this.socket, Datapackages.Message_CreateFile(this.curPat.id, "resources\\data",
+                $"{curPat.hash}-{now.Year}-{now.Month}-{now.Day}-{now.Hour}{now.Minute}.json", this.measurements), "file/create", this, true);
         }
 
         private void OnTimerTick(object sender, ElapsedEventArgs e)
@@ -322,17 +329,17 @@ namespace Patient
 
 
                     // Resistance aanpassen
-                    if (newestMeasurement.Bpm < 110)
+                    if (newestMeasurement.Bpm < 130)
                     {
                         Debug.WriteLine("Adjusting resistance up");
 
-                        BikeHandler.GetInstance().AddPower("50");
+                        BikeHandler.GetInstance().AddPower("25");
                     }
                     else if(newestMeasurement.Bpm > 200)
                     {
                         Debug.WriteLine("Adjusting resistance down");
 
-                        BikeHandler.GetInstance().AddPower("-50");
+                        BikeHandler.GetInstance().AddPower("-25");
                     }
 
                     
@@ -340,7 +347,10 @@ namespace Patient
                     {
                         SetInstructionText(Instruction.HEARTRATE_STEADY);
                         steadyStateReached = true;
-                        elapsedSeconds = 240;
+                        elapsedSeconds = 239;
+
+                        measurements.Clear();
+
                         this.BeginInvoke((Action)(() => pgbProgress.Value = 240));
                     }
 
@@ -358,7 +368,7 @@ namespace Patient
             if(elapsedSeconds > 360)
             {
                 Debug.WriteLine("In Cooldown: " + elapsedSeconds);
-
+                this.elapsedSeconds = 420;
                 if (newestMeasurement.Resistance != 75)
                     BikeHandler.GetInstance().SetPower(75);
             }

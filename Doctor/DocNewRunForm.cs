@@ -63,8 +63,8 @@ namespace Doctor
 
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            if(this.pgbRunning.Value != this.pgbRunning.Maximum)
-                BeginInvoke((Action) (() => this.pgbRunning.Value++));
+            if(this.pgbRunning.Value < this.pgbRunning.Maximum)
+                BeginInvoke((Action) (() => this.pgbRunning.Increment(1)));
             else
             {
                 this.timer.Stop();
@@ -147,12 +147,14 @@ namespace Doctor
 
         private void btnFinish_Click(object sender, EventArgs e)
         {
+            this.timer.Stop();
+            DataRouter.GetInstance().setGenericMessageListener(null);
             this.Close();
         }
 
         public void onMessageResponse(string command, dynamic data)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public void onMessageResponseError(string command, string info)
@@ -170,7 +172,7 @@ namespace Doctor
                 JObject obj = JObject.FromObject(message.measurement);
                 BikeMeasurement measurement = obj.ToObject<BikeMeasurement>();
                 BeginInvoke((Action)(() => AddMeasurementToChart(measurement)));
-            } else if(message.command = "user/msg")
+            } else if(message.command == "user/msg")
             {
                 BeginInvoke((Action)(() => StopTest()));
             }

@@ -224,10 +224,13 @@ namespace RHServer.Networking
 
         private void CreateFile(Socket c, dynamic data)
         {
-            bool succes = FileManager.CreateFile(data.file, data.location);
+            String file = data.file;
+            String location = data.location;
+            bool succes = !FileManager.CheckIfFileExists(file, location);
             if (succes)
             {
-                FileManager.WriteFileContents(data.file, data.location, data.data);
+                List<BikeMeasurement> ms = ((JArray)data.data).ToObject<List<BikeMeasurement>>();
+                FileManager.WriteFileContents(file, location, JsonConvert.SerializeObject(ms));
                 this.SendDataToConnection(c, DataPackages.Response_Ack("file/create", "", null));
             } else
             {

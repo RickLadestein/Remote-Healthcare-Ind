@@ -88,6 +88,20 @@ namespace RHServer.IO
             }
         }
 
+        public static bool CheckIfFileExists(String file_name, String location)
+        {
+            String path = Directory.GetCurrentDirectory();
+            path = Path.Combine(path, location);
+            if (File.Exists(Path.Combine(path, file_name)))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public static List<String> GetFileNames(string folder, string format)
         {
             //Files are stored (PATIENTHASH-date-month-year.json)

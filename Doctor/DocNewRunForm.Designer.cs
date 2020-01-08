@@ -94,7 +94,7 @@
             this.btnFinish.TabIndex = 4;
             this.btnFinish.Text = "Finish";
             this.btnFinish.UseVisualStyleBackColor = true;
-            this.btnFinish.Click += new System.EventHandler(this.btnStart_Click);
+            this.btnFinish.Click += new System.EventHandler(this.btnFinish_Click);
             // 
             // HeartGuage
             // 

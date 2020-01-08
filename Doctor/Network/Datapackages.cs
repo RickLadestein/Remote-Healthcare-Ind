@@ -81,7 +81,7 @@ namespace Doctor.Network
                     id = id,
                     location = location,
                     file = filename,
-                    data = data
+                    data = JsonConvert.SerializeObject(data)
                 }
             });
         }

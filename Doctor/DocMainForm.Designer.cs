@@ -49,6 +49,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.btnNewRun = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -229,6 +230,7 @@
             // 
             this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox5.Controls.Add(this.label4);
             this.groupBox5.Controls.Add(this.label3);
             this.groupBox5.Controls.Add(this.label2);
             this.groupBox5.Controls.Add(this.label1);
@@ -244,9 +246,9 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(7, 66);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(109, 13);
+            this.label3.Size = new System.Drawing.Size(78, 13);
             this.label3.TabIndex = 2;
-            this.label3.Text = "Average Resistance: ";
+            this.label3.Text = "Average Rpm: ";
             // 
             // label2
             // 
@@ -275,6 +277,15 @@
             this.btnNewRun.Text = "Start New Run";
             this.btnNewRun.UseVisualStyleBackColor = true;
             this.btnNewRun.Click += new System.EventHandler(this.btnNewRun_Click);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(7, 89);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(121, 13);
+            this.label4.TabIndex = 3;
+            this.label4.Text = "Steady State Reached: ";
             // 
             // AstrandDoctorGUI
             // 
@@ -330,6 +341,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnNewRun;
+        private System.Windows.Forms.Label label4;
     }
 }
 

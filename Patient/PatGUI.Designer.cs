@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.DummyButton = new System.Windows.Forms.Button();
             this.sgRpm = new LiveCharts.WinForms.SolidGauge();
             this.sgHeartRate = new LiveCharts.WinForms.SolidGauge();
             this.sgPower = new LiveCharts.WinForms.SolidGauge();
@@ -39,17 +38,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.SuspendLayout();
-            // 
-            // DummyButton
-            // 
-            this.DummyButton.Location = new System.Drawing.Point(733, 79);
-            this.DummyButton.Margin = new System.Windows.Forms.Padding(2);
-            this.DummyButton.Name = "DummyButton";
-            this.DummyButton.Size = new System.Drawing.Size(128, 19);
-            this.DummyButton.TabIndex = 0;
-            this.DummyButton.Text = "Send Data";
-            this.DummyButton.UseVisualStyleBackColor = true;
-            this.DummyButton.Click += new System.EventHandler(this.DummyButton_Click);
             // 
             // sgRpm
             // 
@@ -145,7 +133,6 @@
             this.Controls.Add(this.sgPower);
             this.Controls.Add(this.sgHeartRate);
             this.Controls.Add(this.sgRpm);
-            this.Controls.Add(this.DummyButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Margin = new System.Windows.Forms.Padding(2);
             this.MaximizeBox = false;
@@ -158,8 +145,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Button DummyButton;
         private LiveCharts.WinForms.SolidGauge sgRpm;
         private LiveCharts.WinForms.SolidGauge sgHeartRate;
         private LiveCharts.WinForms.SolidGauge sgPower;
