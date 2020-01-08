@@ -15,7 +15,6 @@ using Doctor.Network;
 using Doctor.Profiles;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
-using System.Timers;
 
 namespace Doctor
 {
@@ -58,7 +57,21 @@ namespace Doctor
 
 
             timer = new System.Timers.Timer(1000);
+            timer.Elapsed += Timer_Elapsed;
             DataRouter.GetInstance().setGenericMessageListener(this);
+        }
+
+        private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            if(this.pgbRunning.Value != this.pgbRunning.Maximum)
+                BeginInvoke((Action) (() => this.pgbRunning.Value++));
+            else
+            {
+                this.timer.Stop();
+                System.Threading.Thread.Sleep(2000);
+                BeginInvoke((Action)(() => StopTest()));
+            }
+                
         }
 
         private void btnStart_Click(object sender, EventArgs e)
@@ -66,7 +79,8 @@ namespace Doctor
             btnStart.Visible = false;
             lblClientInfo.Show();
             lblTestStatus.Show();
-
+            timer.Start();
+            StartTest();
         }
 
         private void StartTest()
@@ -94,6 +108,16 @@ namespace Doctor
             ));
             ready = true;
             SetTestStatus("Running test...");
+        }
+
+        private void StopTest()
+        {
+            DataRouter.GetInstance().SendMessage(this.socket,
+                Datapackages.Message_Message(this.curDoc.id.ToString(), this.curPat.id.ToString(), "STOP"), "user/msg",
+                this, false);
+            this.pgbRunning.Value = this.pgbRunning.Maximum;
+            this.btnFinish.Visible = true;
+            this.btnFinish.Enabled = true;
         }
 
         private void AddMeasurementToChart(BikeMeasurement m)
@@ -140,9 +164,16 @@ namespace Doctor
         public void onGenericMessageReceived(string command, dynamic data)
         {
             dynamic message = data.data.data;
-            JObject obj = JObject.FromObject(message.measurement);
-            BikeMeasurement measurement = obj.ToObject<BikeMeasurement>();
-            BeginInvoke((Action)(() => AddMeasurementToChart(measurement)));
+
+            if (message.command == "user/data")
+            {
+                JObject obj = JObject.FromObject(message.measurement);
+                BikeMeasurement measurement = obj.ToObject<BikeMeasurement>();
+                BeginInvoke((Action)(() => AddMeasurementToChart(measurement)));
+            } else if(message.command = "user/msg")
+            {
+                BeginInvoke((Action)(() => StopTest()));
+            }
         }
 
         private void DocNewRunForm_FormClosing(object sender, FormClosingEventArgs e)

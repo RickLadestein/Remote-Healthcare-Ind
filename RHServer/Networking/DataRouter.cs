@@ -271,6 +271,11 @@ namespace RHServer.Networking
         {
             String target = data.target;
             String command = "user/msg";
+
+            if (((string)data.command) == "user/msg")
+            {
+                Console.WriteLine("");
+            }
             Socket t_connection = null;
             foreach (Socket con in Server.instance.connections)
                 if (con.id == target)

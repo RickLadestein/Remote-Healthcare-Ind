@@ -74,6 +74,7 @@ namespace Patient
             bh = BikeHandler.GetInstance();
             bh.AddSubscriber(this);
             bh.StartTimer();
+
         }
 
         private void StartLogin()
@@ -122,8 +123,13 @@ namespace Patient
 
         private void SetInstructionText(Instruction instruction)
         {
+
+            if (!testRunning)
+                return;
+
             string oldMessage = lblInstruction.Text;
             string newMessage;
+
 
             switch(instruction)
             {
@@ -193,14 +199,6 @@ namespace Patient
                     this,
                     false);
             }
-
-
-            if(testRunning)
-            {
-                DataRouter.GetInstance().SendMessage(s, Datapackages.Message_TrainingData(curPat.id, "", measurement), "user/data", this, false);
-                //measurements.Add(measurement);
-            }
-
         }
 
         #region Callbacks
@@ -221,7 +219,20 @@ namespace Patient
         public void onGenericMessageReceived(string command, dynamic data)
         {
             dynamic message = data.data.data;
-            this.bound_doc = (string) message.id;        
+            this.bound_doc = (string) message.id;
+            String msg = (String)message.msg;
+            switch(msg)
+            {
+                case "FIRST MESSAGE":
+                    break;
+                case "START":
+                    BeginInvoke((Action)(() => RunTest()));
+                    break;
+                case "STOP":
+                    if(testRunning)
+                        BeginInvoke((Action)(() => EndTest(false)));
+                    break;
+            }
         }
         #endregion
 
@@ -239,21 +250,28 @@ namespace Patient
             lblCounter.Visible = true;
             steadyStateReached = false;
             steadyStateHeartrates = new int[5];
+            testRunning = true;
 
             BikeHandler.GetInstance().SetBikeSettings(50, new TimeSpan(0, 7, 0));
             //BikeHandler.GetInstance().
             //BikeHandler.GetInstance().SetPower(75);
 
+#if DEBUG
             elapsedSeconds = 100;
+#endif
 
             timer.Start();
             
         }
 
-        private void EndTest()
+        private void EndTest(bool completed)
         {
-            timer.Stop();
+            if (completed)
+                DataRouter.GetInstance().SendMessage(this.socket, Datapackages.Message_Message(this.curPat.id.ToString(), this.bound_doc, "END"),
+                    "user/msg", this, false);
 
+            timer.Stop();
+            testRunning = false;
             SetInstructionText(Instruction.WAIT_END);
             this.BeginInvoke((Action)(() => lblCounter.Visible = false));
         }
@@ -304,7 +322,7 @@ namespace Patient
 
 
                     // Resistance aanpassen
-                    if (newestMeasurement.Bpm < 130)
+                    if (newestMeasurement.Bpm < 110)
                     {
                         Debug.WriteLine("Adjusting resistance up");
 
@@ -352,7 +370,7 @@ namespace Patient
             {
                 Debug.WriteLine("Time to end the test.:. " + elapsedSeconds);
 
-                EndTest();
+                EndTest(true);
             }
 
         }
@@ -362,22 +380,7 @@ namespace Patient
             if (prevMeasurement == null)
                 return false;
 
-            return Math.Abs(newMes.Bpm - prevMeasurement.Bpm) < 5; 
-
-
-
-            for (int i = 1; i < 5; i++)
-                steadyStateHeartrates[i] = steadyStateHeartrates[i - 1];
-
-            steadyStateHeartrates[0] = newMes.Bpm;
-
-            bool ss = true;
-
-            for (int i = 1; i < 5; i++)
-                if (Math.Abs(steadyStateHeartrates[i] - steadyStateHeartrates[0]) > 5)
-                    ss = false;
-
-            return ss;
+            return Math.Abs(newMes.Bpm - prevMeasurement.Bpm) < 5 && newMes.Bpm >= 130;
         }
 
         private void OnTextChangeCooldownTimerTick(object sender, ElapsedEventArgs e)

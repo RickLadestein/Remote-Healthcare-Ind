@@ -45,7 +45,7 @@
             // pgbRunning
             // 
             this.pgbRunning.Location = new System.Drawing.Point(13, 86);
-            this.pgbRunning.Maximum = 4200;
+            this.pgbRunning.Maximum = 420;
             this.pgbRunning.Name = "pgbRunning";
             this.pgbRunning.Size = new System.Drawing.Size(744, 13);
             this.pgbRunning.TabIndex = 2;
